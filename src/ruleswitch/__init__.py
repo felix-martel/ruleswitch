@@ -6,6 +6,7 @@ on each response axis; a response complies when it takes allowed values and brea
 
 from ruleswitch.lexicon import Lexicon, match
 from ruleswitch.policy import Policy, load
+from ruleswitch.render import nudge, render
 from ruleswitch.rules import comply, prescribe
 from ruleswitch.types import Article, Breach, Classification, Compliance, Hit, Message, Prescription, Problem
 
@@ -23,5 +24,7 @@ __all__ = [
     "comply",
     "load",
     "match",
+    "nudge",
     "prescribe",
+    "render",
 ]
