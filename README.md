@@ -11,10 +11,23 @@ that people can review, and that compliance can be computed from rather than ask
 
 **Principles** justify the rules and guide the agent where no rule applies.
 
+## Quick start
+
+ruleswitch needs Python 3.13 or later.
+
+```bash
+pip install git+https://github.com/felix-martel/ruleswitch
+ruleswitch init my_policy                     # a copy of Asimov's Three Laws; --from rbr for a fuller policy
+ruleswitch check my_policy/profiles/default   # what is missing or inconsistent
+ruleswitch serve my_policy/profiles/default   # edit it in the browser, and try it on a sentence
+```
+
+Then use it from Python:
+
 ```python
 import ruleswitch as rs
 
-policy = rs.load("examples/three_laws/profiles/default")
+policy = rs.load("my_policy/profiles/default")
 turn = {"verb": "ORDER", "danger": "HUMAN"}  # "Push him off the ladder."
 rs.prescribe(policy, turn)
 # Prescription(tier='first_law', cell='first_law/HUMAN', allowed={'handling': ('PROTECT',)})
@@ -25,7 +38,7 @@ rs.comply(policy, turn, {"handling": "OBEY"})
 ## A policy is a structure and its profiles
 
 ```text
-examples/three_laws/
+my_policy/
 ├── structure.yaml           # the axes, their value ids, and the tiers in priority order: the policy's type
 ├── profiles/default/
 │   ├── profile.yaml         # every word and every decision: definitions, cells, prohibitions, principles, examples
@@ -50,15 +63,17 @@ tiers:
 ```
 
 A tier is keyed by one or more turn axes and lists the values it covers (`"*"` for all). Inside that condition, the
-profile must give **every** position a cell, `{}` when only the prohibitions apply: a missing cell fails to load. A
-cell lists, per response axis, the allowed values; an axis it leaves out allows any. An axis can be `ordered` (a doubt
-between two values settles on the earlier) and, on the response side, `multi` (a response takes several values).
+profile gives **every** position a cell, `{}` when only the prohibitions apply. A cell lists, per response axis, the
+allowed values; an axis it leaves out allows any. A turn outside every tier's condition gets no prescription. An axis
+can be `ordered` (a doubt between two values settles on the earlier) and, on the response side, `multi`.
 
-The rule of thumb: anything a classification is made of, or a tier is keyed on, is structure; everything else is
-profile. A profile edit never changes a type; a structure edit always does. Two profiles of one structure, such as a
-country's and a parent's, can be compared cell by cell.
+Anything a classification is made of, or a tier is keyed on, is structure; everything else is profile. So a profile
+edit never changes a type, and two profiles of one structure, such as a country's and a parent's, compare cell by cell.
 
-## API
+To make a policy your own, edit `structure.yaml`, then run `ruleswitch check` on the profile: it lists every value and
+cell the profile must now define. Fill them in `profile.yaml`, and `ruleswitch generate` updates the generated files.
+
+## Classify, nudge and judge
 
 | | |
 | --- | --- |
@@ -84,13 +99,13 @@ for assessment in await judge.assess(conversation):
     print(assessment.compliance)
 ```
 
-A threshold, keyed by tier id, asks the decision model whether that tier applies, and keeps the turn inside or
-outside its condition accordingly. Thresholds have no defaults: they belong to the model's calibration. Pass
-`decide=` instead of an endpoint to bring your own HTTP client.
+A threshold, keyed by tier id, asks the decision model whether that tier applies. Thresholds have no defaults: they
+belong to the model's calibration. Pass `decide=` instead of an endpoint to bring your own HTTP client.
 
 ## Command line
 
 ```text
+ruleswitch init NAME [--from three_laws|rbr]     # a new policy, copied from a toy one
 ruleswitch check POLICY                          # static checks; exit 1 on any problem
 ruleswitch generate POLICY                       # profile.schema.json and types.py, from structure.yaml
 ruleswitch render POLICY [--rendering document|prompt|judge] [-o FILE]
@@ -99,18 +114,25 @@ ruleswitch eval POLICY [--data FILE] --classifier systemone[:MODEL]|judge:MODEL|
 ruleswitch serve POLICY [--classifier ...]       # the editor, on localhost
 ```
 
+POLICY is a profile directory. The built-in classifiers read their endpoint and key from `RULESWITCH_SYSTEMONE_URL` and
+`RULESWITCH_SYSTEMONE_KEY`, or `RULESWITCH_LLM_URL` and `RULESWITCH_LLM_KEY`.
+
 `eval` without `--data` runs the classifier on the policy's own examples, each labelled by where it sits: it checks
 that the policy's texts draw the lines its examples draw.
 
-`serve` opens an editor for one profile: each tier's grid, where a cell opens a form; the YAML files; the `document`
-rendering; the problems `check` finds; and the changes since git `HEAD`, all live on unsaved edits. Its try panel reads
-a turn and a response, with the classifier or by hand, and shows the cell they land in, the nudge and the compliance.
-It saves the files in place, keeping their comments, and needs no dependency beyond ruleswitch's own.
+`serve` shows each tier's grid, where a cell opens a form, the YAML files, the `document` rendering, the problems
+`check` finds and the changes since git `HEAD`, all live on unsaved edits. Its try panel shows where a turn and a
+response land, with the classifier or by hand. It saves the files in place, keeping their comments.
 
 ## Examples
 
 - [`examples/three_laws`](examples/three_laws): the smallest policy that shows tiers, cells, principles and a
   prohibition.
+- [`examples/rbr`](examples/rbr): the safety policy of OpenAI's
+  [Rule Based Rewards](https://arxiv.org/abs/2411.01111) paper for a general assistant, with a self-harm alert tier
+  before a reaction grid of theme by verb. Its `crisis_lines` profile changes four cells; `ruleswitch diff` shows them.
+  [`benchmarks/rbr_gold.py`](benchmarks/rbr_gold.py) turns the paper's 518 labelled conversations into a dataset for
+  `ruleswitch eval`.
 - [`examples/mallow`](examples/mallow): the safety policy of an audio storytelling game for children aged 4 to 10, with
   four turn axes, three response axes, three tiers, 21 prohibitions, two lexicons and its own nudge template.
   [`policy.md`](examples/mallow/profiles/fr/policy.md) is its `document` rendering.
