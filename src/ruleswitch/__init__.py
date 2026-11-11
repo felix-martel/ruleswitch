@@ -6,6 +6,7 @@ on each response axis; a response complies when it takes allowed values and brea
 
 from ruleswitch.check import check
 from ruleswitch.diff import diff
+from ruleswitch.evaluate import Dataset, compare, evaluate
 from ruleswitch.judge import Judge, openai_compatible
 from ruleswitch.lexicon import Lexicon, match
 from ruleswitch.policy import Policy, load
@@ -33,6 +34,7 @@ __all__ = [
     "Classifier",
     "Complete",
     "Compliance",
+    "Dataset",
     "Decide",
     "Hit",
     "Judge",
@@ -43,8 +45,10 @@ __all__ = [
     "Problem",
     "SystemOne",
     "check",
+    "compare",
     "comply",
     "diff",
+    "evaluate",
     "load",
     "match",
     "nudge",
