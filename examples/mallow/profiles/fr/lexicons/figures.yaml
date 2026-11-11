@@ -1,0 +1,32 @@
+# Sensitive public figures (§2.1, "Personnalité sensible"), matched like `offensive.yaml`. The list comes from Félix's
+# policy (§2.7) and is a seed, not the full list. Use the full name when the surname alone is a common word
+# ("Hollande" is also the Netherlands).
+
+reminds: SENSITIVE_FIGURE
+
+entries:
+  # --- Living political figures
+  - word: "macron"
+    meaning: "Emmanuel Macron, French politician"
+  - word: "sarkozy"
+    meaning: "Nicolas Sarkozy, French politician"
+  - word: "francois hollande"
+    meaning: "François Hollande, French politician"
+  - word: "melenchon"
+    meaning: "Jean-Luc Mélenchon, French politician"
+  - word: "zemmour"
+    meaning: "Éric Zemmour, French politician"
+  # --- Dictators and criminals
+  - word: "hitler"
+    meaning: "Adolf Hitler, Nazi dictator"
+  - word: "mao"
+    meaning: "Mao Zedong, Chinese dictator"
+  - word: "pinochet"
+    meaning: "Augusto Pinochet, Chilean dictator"
+  - word: "dutroux"
+    meaning: "Marc Dutroux, convicted child murderer"
+  # --- Victims of criminal cases
+  - word: "petit gregory"
+    meaning: "Grégory Villemin, child victim of a famous murder case"
+  - word: "samuel paty"
+    meaning: "Samuel Paty, teacher killed in a terrorist attack"

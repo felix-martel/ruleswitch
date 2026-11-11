@@ -1,0 +1,23 @@
+{#- Mallow's nudge: the default one, with longer warnings for the words of its two lexicons. -#}
+{% extends "ruleswitch/nudge.j2" %}
+{% block reminder %}
+{% set words = r.hits | map(attribute="text") | list %}
+{% set one = words | length == 1 %}
+{% set it = "it" if one else "them" %}
+{% if r.hits and r.prohibition.id == "SWEAR_WORDS" %}
+Warning: the child said "{{ words | join('", "') }}". {{ "It is a slur, an insult or crude slang" if one else "They are slurs, insults or crude slang" }}, even if {{ "it sounds" if one else "they sound" }} like a funny invented word, a name or an ingredient.
+- Don't repeat {{ it }}: never say {{ it }}, any part of {{ it }}, or a word made up from {{ it }}, for the rest of the game, and never keep {{ it }} in a context variable.
+- Don't accept {{ it }}: {{ "it is" if one else "they are" }} not an answer to what the story asked, not a name, a dish, an ingredient or anything else the story keeps. Don't call {{ it }} funny, original or mysterious, and don't carry on as if the child had answered. If the rest of their message answers the story, deal with {{ "this word" if one else "these words" }} first and let that answer wait for their next turn.
+- Don't lecture: don't explain what {{ "it means" if one else "they mean" }} and don't scold. At most one short, kind line, then ask again for what the story needs.
+
+{% elif r.hits and r.prohibition.id == "SENSITIVE_FIGURE" %}
+{% set it = "them" if not one else "this person" %}
+Warning: the child mentioned {% for h in r.hits %}"{{ h.text }}" ({{ h.entry.meaning }}){{ ", " if not loop.last }}{% endfor %}. {{ "This is a real public figure" if one else "These are real public figures" }} who must not enter the story.
+- Don't bring {{ it }} into the adventure: not as a character, a guest, a name for anything, or a word in a magic formula.
+- Don't say what you think of {{ it }}.
+- Offer a made-up alternative instead (another name, an invented character) and carry on with the story.
+
+{% else %}
+{{ super() }}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,387 @@
+# Words that flag a player input, warned about by the game engine and read by the decision model.
+#
+# The LLM does not always know these words: it takes old-fashioned insults, slang and coded slurs for invented words,
+# creature names or ingredients, and repeats them.
+#
+# - Matching ignores case and accents, and only matches whole words.
+# - A plural in -s or -x also matches: "crouille" flags "crouilles". Irregular plurals ("trannies") are entries of
+#   their own.
+# - `prefix: true` matches any ending: "chinetoqu" flags "chinetoque" and "chinetoques". Leave it out for a word
+#   whose prefix would also catch common words ("spic" and "spice").
+# - Several words match with any spacing or hyphenation between them.
+# - `languages` restricts an entry to games in those languages, for a word that is innocent in another one.
+# - `meaning` tells the classifier and the agent what the word means, which they often don't know.
+#
+# Leave out words with an innocent meaning a child could use ("raton" as in raton laveur, "tapette", "pédale",
+# "morue", "chatte", "bride", "coon", "spade"): flagging them would make the agent dodge normal answers.
+# Spell out feminine forms and common spelling variants, since the speech recognition picks any of them.
+
+reminds: SWEAR_WORDS
+
+entries:
+  # --- FR: racist and antisemitic slurs
+  - word: "youpin"
+    prefix: true
+    meaning: "antisemitic slur for a Jewish person"
+  - word: "youpine"
+    prefix: true
+    meaning: "antisemitic slur for a Jewish person"
+  - word: "youtre"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "feuj"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "niakoue"
+    prefix: true
+    meaning: "racist slur for a Vietnamese or East Asian person"
+  - word: "niakwe"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "nyakwe"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "chinetoqu"
+    prefix: true
+    meaning: "racist slur for an East Asian person"
+  - word: "chinetok"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "chintok"
+    prefix: true
+    meaning: "racist slur for an East Asian person"
+  - word: "shintok"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "chinetoc"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "crouille"
+    prefix: true
+    meaning: "racist slur for a North African or Arab person"
+  - word: "bougnoul"
+    prefix: true
+    meaning: "racist slur for a North African or Arab person"
+  - word: "bougne"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "bicot"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "boukak"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "bamboula"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "negro"
+    meaning: "racist slur for a Black person"
+  - word: "negresse"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "nègre"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "chleuh"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "boche"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "rital"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "romano"
+    meaning: "racist or antisemitic slur"
+  # --- FR: homophobic slurs
+  - word: "gouine"
+    prefix: true
+    meaning: "homophobic slur for a lesbian"
+  - word: "tarlouze"
+    prefix: true
+    meaning: "homophobic slur for a gay man"
+  - word: "tarlouse"
+    prefix: true
+    meaning: "homophobic slur"
+  - word: "fiotte"
+    prefix: true
+    meaning: "homophobic slur for a gay man"
+  - word: "tafiole"
+    prefix: true
+    meaning: "homophobic slur"
+  - word: "tantouze"
+    prefix: true
+    meaning: "homophobic slur"
+  - word: "pédé"
+    meaning: "homophobic slur for a gay man"
+  # --- FR: sexual slang
+  - word: "fion"
+    meaning: "sexual slang"
+  - word: "bit"
+    meaning: "sexual slang"
+    languages: [fr]
+  - word: "chibre"
+    prefix: true
+    meaning: "vulgar slang for penis"
+  - word: "chibrax"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "zob"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "zgeg"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "teub"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "tub"
+    meaning: "sexual slang"
+    languages: [fr]
+    # "teub" as the speech recognition hears it, which the TTS then reads the English way, as "teub"
+  - word: "braquemard"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "biroute"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "zboub"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "zboube"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "popaul"
+    meaning: "sexual slang"
+    # also an old-fashioned pet form of Paul, which children don't use
+  - word: "chabite"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "chat bite"
+    meaning: "sexual slang"
+    languages: [fr]
+    # "chabite" as the speech recognition splits it; French only, since "chat, bite" is innocent English
+  - word: "coucougnette"
+    prefix: true
+    meaning: "slang for testicles"
+  - word: "roubignole"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "rouston"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "burne"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "teuch"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "teucha"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "techa"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "chagatte"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "schneck"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "gigamembré"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "foufoune"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "branlette"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "branleur"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "branleuse"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "biffl"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "bifl"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "turlutte"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "turlute"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "nibar"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "nibard"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "troufignon"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "troufion"
+    prefix: true
+    meaning: "sexual slang"
+    # also old slang for a private soldier, which children don't use
+  - word: "trouffion"
+    prefix: true
+    meaning: "sexual slang"
+  - word: "soupeur"
+    prefix: true
+    meaning: "sexual slang"
+  # --- FR: insults, including old-fashioned ones
+  - word: "gourgandine"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "catin"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "ribaude"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "greluche"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "radasse"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "roulure"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "pouffiasse"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "pétasse"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "cagole"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "tocard"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "toquard"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "bouseux"
+    meaning: "insult, sometimes old-fashioned"
+  - word: "péquenaud"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "pecnot"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "cul terreux"
+    meaning: "insult, sometimes old-fashioned"
+  - word: "pignouf"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "trouduc"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "gogol"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "triso"
+    meaning: "insult, sometimes old-fashioned"
+  - word: "péripatéticienne"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "croutenard"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "crouteonard"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  - word: "bouegre"
+    prefix: true
+    meaning: "insult, sometimes old-fashioned"
+  # --- EN: racist and antisemitic slurs
+  - word: "kike"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "yid"
+    meaning: "racist or antisemitic slur"
+  - word: "wop"
+    meaning: "racist or antisemitic slur"
+  - word: "dago"
+    meaning: "racist or antisemitic slur"
+  - word: "gook"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "spic"
+    meaning: "racist or antisemitic slur"
+  - word: "wetback"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "raghead"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "towelhead"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "sambo"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "golliwog"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "pikey"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "gyppo"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "wog"
+    meaning: "racist or antisemitic slur"
+  - word: "darkie"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "jigaboo"
+    prefix: true
+    meaning: "racist or antisemitic slur"
+  - word: "paki"
+    meaning: "racist or antisemitic slur"
+  # --- EN: homophobic and transphobic slurs
+  - word: "poofter"
+    prefix: true
+    meaning: "homophobic or transphobic slur"
+  - word: "shirtlifter"
+    prefix: true
+    meaning: "homophobic or transphobic slur"
+  - word: "tranny"
+    meaning: "homophobic or transphobic slur"
+  - word: "trannies"
+    meaning: "homophobic or transphobic slur"
+  # --- EN: sexual slang and insults, including old-fashioned ones
+  - word: "strumpet"
+    prefix: true
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "trollop"
+    prefix: true
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "harlot"
+    prefix: true
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "floozy"
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "floozies"
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "slag"
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "bellend"
+    prefix: true
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "minge"
+    prefix: true
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "twat"
+    prefix: true
+    meaning: "sexual slang or insult, sometimes old-fashioned"
+  - word: "nonce"
+    meaning: "sexual slang or insult, sometimes old-fashioned"

@@ -1,0 +1,1117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ruleswitch profile",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "structure": {
+      "type": "string"
+    },
+    "principles": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/PrincipleFile"
+      }
+    },
+    "turn_axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verb": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "TASK": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "ANNOUNCE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "SHARE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "QUERY": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "PLAY": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "TASK",
+                "ANNOUNCE",
+                "SHARE",
+                "QUERY",
+                "PLAY"
+              ]
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        },
+        "alert": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "URGENT": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "SEVERE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "MILD": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "NONE": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "URGENT",
+                "SEVERE",
+                "MILD",
+                "NONE"
+              ]
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        },
+        "exit": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "LEAVE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "STAY": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "LEAVE",
+                "STAY"
+              ]
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        },
+        "theme": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "GENERAL": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "IDENTITY": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "AFFECTION": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "PROFANITY": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "SEXUALITY": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "HARM": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "FICTIONAL_VIOLENCE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "FAMILY_BELIEF": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "POLITICS": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "GRAVE_TOPIC": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "BANNED": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "CIRCUMVENTION": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "GENERAL",
+                "IDENTITY",
+                "AFFECTION",
+                "PROFANITY",
+                "SEXUALITY",
+                "HARM",
+                "FICTIONAL_VIOLENCE",
+                "FAMILY_BELIEF",
+                "POLITICS",
+                "GRAVE_TOPIC",
+                "BANNED",
+                "CIRCUMVENTION"
+              ]
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        }
+      },
+      "required": [
+        "verb",
+        "alert",
+        "exit",
+        "theme"
+      ]
+    },
+    "response_axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "handling": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "SECURE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "REFUSE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "CORRECT": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "WELCOME": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "DEFLECT": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "NO_ANSWER": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "ANSWER": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "PLAY_ALONG": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "SECURE",
+                "REFUSE",
+                "CORRECT",
+                "WELCOME",
+                "DEFLECT",
+                "NO_ANSWER",
+                "ANSWER",
+                "PLAY_ALONG"
+              ]
+            },
+            "guidance": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        },
+        "referral": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "NONE": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "SUGGESTED": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "IMMEDIATE": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "NONE",
+                "SUGGESTED",
+                "IMMEDIATE"
+              ]
+            },
+            "guidance": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        },
+        "follow_up": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "RESUME": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "OFFER": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "SILENT": {
+                  "$ref": "#/$defs/ValueFile"
+                },
+                "CLOSE": {
+                  "$ref": "#/$defs/ValueFile"
+                }
+              },
+              "required": [
+                "RESUME",
+                "OFFER",
+                "SILENT",
+                "CLOSE"
+              ]
+            },
+            "guidance": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "definition",
+            "values"
+          ]
+        }
+      },
+      "required": [
+        "handling",
+        "referral",
+        "follow_up"
+      ]
+    },
+    "tiers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "alert": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "definition": {
+              "type": "string"
+            },
+            "instruction": {
+              "type": "string"
+            },
+            "cells": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "URGENT": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY"
+                  ]
+                },
+                "SEVERE": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY"
+                  ]
+                },
+                "MILD": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY"
+                  ]
+                }
+              },
+              "required": [
+                "URGENT",
+                "SEVERE",
+                "MILD"
+              ]
+            }
+          },
+          "required": [
+            "label",
+            "definition",
+            "instruction",
+            "cells"
+          ]
+        },
+        "exit": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "definition": {
+              "type": "string"
+            },
+            "instruction": {
+              "type": "string"
+            },
+            "cells": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "LEAVE": {
+                  "$ref": "#/$defs/Cell"
+                }
+              },
+              "required": [
+                "LEAVE"
+              ]
+            }
+          },
+          "required": [
+            "label",
+            "definition",
+            "instruction",
+            "cells"
+          ]
+        },
+        "reaction": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "definition": {
+              "type": "string"
+            },
+            "instruction": {
+              "type": "string"
+            },
+            "cells": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "IDENTITY": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "AFFECTION": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "PROFANITY": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "SEXUALITY": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "HARM": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "FICTIONAL_VIOLENCE": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "FAMILY_BELIEF": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "POLITICS": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "GRAVE_TOPIC": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "BANNED": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                },
+                "CIRCUMVENTION": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "TASK": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "ANNOUNCE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "SHARE": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "QUERY": {
+                      "$ref": "#/$defs/Cell"
+                    },
+                    "PLAY": {
+                      "$ref": "#/$defs/Cell"
+                    }
+                  },
+                  "required": [
+                    "TASK",
+                    "ANNOUNCE",
+                    "SHARE",
+                    "QUERY",
+                    "PLAY"
+                  ]
+                }
+              },
+              "required": [
+                "IDENTITY",
+                "AFFECTION",
+                "PROFANITY",
+                "SEXUALITY",
+                "HARM",
+                "FICTIONAL_VIOLENCE",
+                "FAMILY_BELIEF",
+                "POLITICS",
+                "GRAVE_TOPIC",
+                "BANNED",
+                "CIRCUMVENTION"
+              ]
+            }
+          },
+          "required": [
+            "label",
+            "definition",
+            "instruction",
+            "cells"
+          ]
+        }
+      },
+      "required": [
+        "alert",
+        "exit",
+        "reaction"
+      ]
+    },
+    "prohibitions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/ProhibitionFile"
+      }
+    }
+  },
+  "required": [
+    "turn_axes",
+    "response_axes",
+    "tiers"
+  ],
+  "$defs": {
+    "ExampleFile": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MessageFile"
+          },
+          "title": "Context",
+          "type": "array"
+        },
+        "turn": {
+          "title": "Turn",
+          "type": "string"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "required": [
+        "turn"
+      ],
+      "title": "ExampleFile",
+      "type": "object"
+    },
+    "MessageFile": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "MessageFile",
+      "type": "object"
+    },
+    "PrincipleFile": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "text"
+      ],
+      "title": "PrincipleFile",
+      "type": "object"
+    },
+    "ProhibitionFile": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        },
+        "valid": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ExampleFile"
+          },
+          "title": "Valid",
+          "type": "array"
+        },
+        "invalid": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ExampleFile"
+          },
+          "title": "Invalid",
+          "type": "array"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "ProhibitionFile",
+      "type": "object"
+    },
+    "ValueFile": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "indicators": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Indicators",
+          "type": "array"
+        },
+        "excludes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Excludes"
+        },
+        "includes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Includes"
+        },
+        "avoids": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Avoids"
+        },
+        "default": {
+          "type": "boolean",
+          "default": false,
+          "title": "Default"
+        },
+        "examples": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ExampleFile"
+          },
+          "title": "Examples",
+          "type": "array"
+        }
+      },
+      "required": [
+        "label",
+        "definition"
+      ],
+      "title": "ValueFile",
+      "type": "object"
+    },
+    "Cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "handling": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "SECURE",
+              "REFUSE",
+              "CORRECT",
+              "WELCOME",
+              "DEFLECT",
+              "NO_ANSWER",
+              "ANSWER",
+              "PLAY_ALONG"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "referral": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "NONE",
+              "SUGGESTED",
+              "IMMEDIATE"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "follow_up": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "RESUME",
+              "OFFER",
+              "SILENT",
+              "CLOSE"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExampleFile"
+          }
+        }
+      }
+    }
+  }
+}

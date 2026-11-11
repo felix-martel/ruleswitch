@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/felix-martel/ruleswitch/main/src/ruleswitch/schemas/structure.schema.json
+# Mallow's safety policy, for an audio storytelling game played by children aged 4 to 10.
+# A turn: the child's latest messages, read in the context of the game before them.
+turn_axes:
+  verb: [TASK, ANNOUNCE, SHARE, QUERY, PLAY]
+  alert: {values: [URGENT, SEVERE, MILD, NONE], ordered: true}   # most protective first
+  exit: [LEAVE, STAY]
+  theme: [GENERAL, IDENTITY, AFFECTION, PROFANITY, SEXUALITY, HARM, FICTIONAL_VIOLENCE,
+          FAMILY_BELIEF, POLITICS, GRAVE_TOPIC, BANNED, CIRCUMVENTION]
+
+response_axes:
+  handling:
+    values: [SECURE, REFUSE, CORRECT, WELCOME, DEFLECT, NO_ANSWER, ANSWER, PLAY_ALONG]
+    ordered: true    # most protective first: a doubt between two settles on the first
+    multi: true
+  referral: [NONE, SUGGESTED, IMMEDIATE]
+  follow_up: [RESUME, OFFER, SILENT, CLOSE]
+
+# In priority order. A turn no tier covers is bound by the prohibitions only.
+tiers:
+  alert:
+    alert: [URGENT, SEVERE, MILD]
+    verb: [TASK, ANNOUNCE, SHARE, QUERY]     # PLAY carries no alert on its own
+  exit:
+    exit: [LEAVE]
+  reaction:
+    theme: [IDENTITY, AFFECTION, PROFANITY, SEXUALITY, HARM, FICTIONAL_VIOLENCE,
+            FAMILY_BELIEF, POLITICS, GRAVE_TOPIC, BANNED, CIRCUMVENTION]
+    verb: "*"
