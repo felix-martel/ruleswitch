@@ -1,4 +1,4 @@
-"""The `ruleswitch` command: check, generate, render, diff and evaluate policies, and serve the editor.
+"""The `ruleswitch` command: create, check, generate, render, diff and evaluate policies, and serve the editor.
 
 POLICY is a profile directory, such as `examples/mallow/profiles/fr`. The built-in classifiers read their endpoint and
 key from the environment: `RULESWITCH_SYSTEMONE_URL` and `RULESWITCH_SYSTEMONE_KEY`, or `RULESWITCH_LLM_URL` and
@@ -12,6 +12,7 @@ import asyncio
 import importlib
 import json
 import os
+import shutil
 import sys
 from collections.abc import Callable, Sequence
 from pathlib import Path
@@ -26,6 +27,23 @@ from ruleswitch.policy import Policy, PolicyError, load
 from ruleswitch.render import render
 from ruleswitch.systemone import SystemOne
 from ruleswitch.types import Classifier
+
+TOYS = ("three_laws", "rbr")
+
+
+def _init(name: str, toy: str) -> int:
+    """Copy a toy policy to the new directory `name`. The toys ship in the package, or sit in a checkout's examples."""
+    here = Path(__file__).parent
+    source = next(p for root in (here / "examples", here.parents[1] / "examples") if (p := root / toy).is_dir())
+    try:
+        shutil.copytree(source, name, ignore=shutil.ignore_patterns("__pycache__"))
+    except FileExistsError:
+        print(f"{name} already exists", file=sys.stderr)
+        return 1
+    profile = Path(name, "profiles", "default")
+    print(f"wrote {name}, a copy of the {toy} policy. Edit its structure.yaml and {profile / 'profile.yaml'}, then:")
+    print(f"  ruleswitch check {profile}")
+    return 0
 
 
 def _load_at(spec: str) -> Policy:
@@ -57,6 +75,9 @@ def _classifier(spec: str, thresholds: dict[str, float]) -> Callable[[Policy], C
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ruleswitch", description=(__doc__ or "").split("\n\n")[0])
     commands = parser.add_subparsers(dest="command", required=True)
+    i = commands.add_parser("init", help="a new policy, copied from a toy policy")
+    i.add_argument("name", help="the directory to create")
+    i.add_argument("--from", dest="toy", choices=TOYS, default=TOYS[0])
     commands.add_parser("check", help="static checks; exit 1 on any problem").add_argument("policy")
     commands.add_parser("generate", help="profile.schema.json and types.py, from structure.yaml").add_argument("policy")
     r = commands.add_parser("render", help="the policy as text")
@@ -79,6 +100,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         command.add_argument("--threshold", action="append", default=[], metavar="TIER=P", help="SystemOne tiers")
     args = parser.parse_args(argv)
 
+    if args.command == "init":
+        return _init(args.name, args.toy)
     thresholds = {t: float(p) for t, p in (t.split("=") for t in getattr(args, "threshold", []))}
     try:
         if args.command == "diff":

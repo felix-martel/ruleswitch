@@ -1,4 +1,4 @@
-"""The contract callers rely on, on the two example policies. Kept minimal on purpose."""
+"""The contract callers rely on, on the example policies. Kept minimal on purpose."""
 
 import shutil
 from pathlib import Path
@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 import ruleswitch as rs
+from ruleswitch.cli import main
 from ruleswitch.policy import PolicyError
 
 EXAMPLES = Path(__file__).parents[1] / "examples"
@@ -86,3 +87,8 @@ def test_diff_labels_a_loosened_cell(tmp_path):
     profile.write_text(profile.read_text().replace("handling: [OBEY]", "handling: [OBEY, ANSWER]"))
     changes = rs.diff(rs.load(THREE_LAWS), rs.load(profile.parent)).changes
     assert [(c.kind, c.id, c.change) for c in changes] == [("cell", "second_law/ORDER", "loosened")]
+
+
+def test_init_copies_a_toy_policy_that_checks(tmp_path):
+    assert main(["init", str(tmp_path / "p"), "--from", "rbr"]) == 0
+    assert rs.check(rs.load(tmp_path / "p/profiles/default")) == []
