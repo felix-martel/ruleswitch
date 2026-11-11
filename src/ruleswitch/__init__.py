@@ -10,19 +10,34 @@ from ruleswitch.lexicon import Lexicon, match
 from ruleswitch.policy import Policy, load
 from ruleswitch.render import nudge, render
 from ruleswitch.rules import comply, prescribe
-from ruleswitch.types import Article, Breach, Classification, Compliance, Hit, Message, Prescription, Problem
+from ruleswitch.systemone import SystemOne
+from ruleswitch.types import (
+    Article,
+    Breach,
+    Classification,
+    Classifier,
+    Compliance,
+    Decide,
+    Hit,
+    Message,
+    Prescription,
+    Problem,
+)
 
 __all__ = [
     "Article",
     "Breach",
     "Classification",
+    "Classifier",
     "Compliance",
+    "Decide",
     "Hit",
     "Lexicon",
     "Message",
     "Policy",
     "Prescription",
     "Problem",
+    "SystemOne",
     "check",
     "comply",
     "diff",
