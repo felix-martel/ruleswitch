@@ -1,4 +1,4 @@
-"""The `ruleswitch` command: check, generate, render, diff and evaluate policies.
+"""The `ruleswitch` command: check, generate, render, diff and evaluate policies, and serve the editor.
 
 POLICY is a profile directory, such as `examples/mallow/profiles/fr`. The built-in classifiers read their endpoint and
 key from the environment: `RULESWITCH_SYSTEMONE_URL` and `RULESWITCH_SYSTEMONE_KEY`, or `RULESWITCH_LLM_URL` and
@@ -18,6 +18,7 @@ from pathlib import Path
 
 from ruleswitch.check import check
 from ruleswitch.diff import diff
+from ruleswitch.editor import serve
 from ruleswitch.evaluate import Dataset, evaluate
 from ruleswitch.generate import generate
 from ruleswitch.judge import Judge, openai_compatible
@@ -69,13 +70,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     e.add_argument("policy")
     e.add_argument("--data", help="a JSONL dataset")
     e.add_argument("--classifier", required=True, help="systemone[:MODEL], judge:MODEL or module:attr")
-    e.add_argument("--threshold", action="append", default=[], metavar="TIER=P", help="SystemOne tier thresholds")
     e.add_argument("--json", action="store_true", help="the agreement per label as JSON")
+    v = commands.add_parser("serve", help="the editor, on localhost")
+    v.add_argument("policy")
+    v.add_argument("--port", type=int, default=8765)
+    v.add_argument("--classifier", help="the try panel's: systemone[:MODEL], judge:MODEL or module:attr")
+    for command in (e, v):
+        command.add_argument("--threshold", action="append", default=[], metavar="TIER=P", help="SystemOne tiers")
     args = parser.parse_args(argv)
 
+    thresholds = {t: float(p) for t, p in (t.split("=") for t in getattr(args, "threshold", []))}
     try:
         if args.command == "diff":
             print(diff(_load_at(args.old), _load_at(args.new)))
+            return 0
+        if args.command == "serve":
+            serve(args.policy, args.port, args.classifier and _classifier(args.classifier, thresholds))
             return 0
         policy = load(args.policy)
     except PolicyError as error:
@@ -97,7 +107,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             print(text, end="")
         return 0
-    thresholds = {t: float(p) for t, p in (s.split("=") for s in args.threshold)}
     data = Dataset.load(args.data) if args.data else Dataset.from_policy(policy)
     report = asyncio.run(evaluate(policy, data, _classifier(args.classifier, thresholds)(policy)))
     print(json.dumps(report.agreement()) if args.json else report.markdown(), end="")

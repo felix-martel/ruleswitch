@@ -96,10 +96,16 @@ ruleswitch generate POLICY                       # profile.schema.json and types
 ruleswitch render POLICY [--rendering document|prompt|judge] [-o FILE]
 ruleswitch diff OLD NEW                          # profile directories, or DIR@REV for a git revision
 ruleswitch eval POLICY [--data FILE] --classifier systemone[:MODEL]|judge:MODEL|module:attr
+ruleswitch serve POLICY [--classifier ...]       # the editor, on localhost
 ```
 
 `eval` without `--data` runs the classifier on the policy's own examples, each labelled by where it sits: it checks
 that the policy's texts draw the lines its examples draw.
+
+`serve` opens an editor for one profile: each tier's grid, where a cell opens a form; the YAML files; the `document`
+rendering; the problems `check` finds; and the changes since git `HEAD`, all live on unsaved edits. Its try panel reads
+a turn and a response, with the classifier or by hand, and shows the cell they land in, the nudge and the compliance.
+It saves the files in place, keeping their comments, and needs no dependency beyond ruleswitch's own.
 
 ## Examples
 
