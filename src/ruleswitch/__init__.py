@@ -4,6 +4,8 @@ A policy classifies a user's turn on its turn axes; its tiers, tried in order, p
 on each response axis; a response complies when it takes allowed values and breaches no prohibition.
 """
 
+from ruleswitch.check import check
+from ruleswitch.diff import diff
 from ruleswitch.lexicon import Lexicon, match
 from ruleswitch.policy import Policy, load
 from ruleswitch.render import nudge, render
@@ -21,7 +23,9 @@ __all__ = [
     "Policy",
     "Prescription",
     "Problem",
+    "check",
     "comply",
+    "diff",
     "load",
     "match",
     "nudge",
