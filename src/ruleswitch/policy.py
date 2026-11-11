@@ -7,6 +7,8 @@
 from __future__ import annotations
 
 import hashlib
+import subprocess
+import tempfile
 from collections.abc import Mapping
 from dataclasses import dataclass
 from itertools import product
@@ -278,17 +280,27 @@ def _validation(where: str, error: ValidationError) -> list[Problem]:
     return [Problem(f"{where}:{'.'.join(map(str, e['loc']))}", e["msg"]) for e in error.errors()]
 
 
-def load(path: str | Path, digest: str | None = None) -> Policy:
+def _checkout(path: Path, revision: str) -> Path:
+    """`path` in a copy of its git repository at `revision`."""
+    top = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True, cwd=path).strip())
+    tree = tempfile.mkdtemp(prefix="ruleswitch-")
+    archive = subprocess.run(["git", "archive", revision], cwd=top, check=True, capture_output=True).stdout
+    subprocess.run(["tar", "-x", "-C", tree], input=archive, check=True)
+    return Path(tree) / path.resolve().relative_to(top)
+
+
+def load(path: str | Path, digest: str | None = None, *, revision: str | None = None) -> Policy:
     """Load the profile in the directory `path`, such as `examples/mallow/profiles/fr`, with its structure.
 
     Args:
         path: a profile directory, holding `profile.yaml` and optionally `lexicons/*.yaml`.
         digest: the structure digest the caller's generated types were made from; raises when it differs.
+        revision: a git revision, such as `HEAD~1`, to load the files as they were then.
 
     Raises:
         PolicyError: with every problem found, when the files don't parse or the profile doesn't fit its structure.
     """
-    profile_dir = Path(path)
+    profile_dir = Path(path) if revision is None else _checkout(Path(path), revision)
     problems: list[Problem] = []
     try:
         profile = ProfileFile.model_validate(_read(profile_dir / PROFILE))

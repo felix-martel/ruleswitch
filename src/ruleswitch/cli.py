@@ -12,9 +12,7 @@ import asyncio
 import importlib
 import json
 import os
-import subprocess
 import sys
-import tempfile
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
@@ -34,11 +32,7 @@ def _load_at(spec: str) -> Policy:
     if "@" not in spec:
         return load(spec)
     path, revision = spec.rsplit("@", 1)
-    top = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True, cwd=path).strip())
-    tree = tempfile.mkdtemp(prefix="ruleswitch-")
-    archive = subprocess.run(["git", "archive", revision], cwd=top, check=True, capture_output=True).stdout
-    subprocess.run(["tar", "-x", "-C", tree], input=archive, check=True)
-    return load(Path(tree) / Path(path).resolve().relative_to(top))
+    return load(path, revision=revision)
 
 
 def _classifier(spec: str, thresholds: dict[str, float]) -> Callable[[Policy], Classifier]:
