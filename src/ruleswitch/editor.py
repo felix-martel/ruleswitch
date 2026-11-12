@@ -30,7 +30,7 @@ from ruleswitch.check import check
 from ruleswitch.diff import diff
 from ruleswitch.lexicon import match
 from ruleswitch.policy import PROFILE, STRUCTURE, Policy, PolicyError, load
-from ruleswitch.render import nudge, render
+from ruleswitch.render import nudge, template
 from ruleswitch.rules import comply, prescribe
 from ruleswitch.types import Classification, Classifier, Message
 
@@ -93,7 +93,7 @@ class _Workspace:
             return {
                 "problems": [str(p) for p in check(policy)],
                 "policy": _outline(policy),
-                "document": render(policy, "document"),
+                "document": template(policy, "document.j2", note=False),
                 "changes": self.changes(policy),
             }
 
@@ -158,14 +158,17 @@ def _classification(c: Classification) -> dict[str, Any]:
 
 
 def _outline(policy: Policy) -> dict[str, Any]:
-    """What the page needs to draw the grids and the try panel's choices."""
+    """What the page needs to draw the grids, the try panel's choices, and the previews of every id."""
 
     def axes(side: Mapping[str, Any]) -> list[dict[str, Any]]:
         return [
             {
                 "id": a.id,
                 "multi": a.multi,
-                "values": [{"id": v.id, "label": v.label, "default": v.default} for v in a.values],
+                "definition": a.definition,
+                "values": [
+                    {"id": v.id, "label": v.label, "definition": v.definition, "default": v.default} for v in a.values
+                ],
             }
             for a in side.values()
         ]
@@ -185,6 +188,7 @@ def _outline(policy: Policy) -> dict[str, Any]:
             }
             for t in policy.tiers.values()
         ],
+        "prohibitions": [{"id": p.id, "text": p.text} for p in policy.prohibitions.values()],
     }
 
 
@@ -244,5 +248,7 @@ def serve(path: str | Path, port: int = 8765, classifier: Callable[[Policy], Cla
     """
     server = ThreadingHTTPServer(("127.0.0.1", port), _handler(_Workspace(Path(path), classifier)))
     print(f"ruleswitch editor on http://127.0.0.1:{server.server_port}", flush=True)
+    if classifier is None:
+        print("no --classifier: the try panel takes values set by hand", flush=True)
     with contextlib.suppress(KeyboardInterrupt):
         server.serve_forever()

@@ -5,82 +5,113 @@
 <title>ruleswitch</title>
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font: 14px/1.45 system-ui, sans-serif; color: #18181b; background: #fafafa; }
-  header { display: flex; align-items: center; gap: 12px; padding: 10px 20px; background: #fff; border-bottom: 1px solid #e4e4e7; position: sticky; top: 0; z-index: 2; }
+  :root {
+    --line: #e4e4e7; --muted: #71717a; --soft: #f4f4f5;
+    /* The only green and red on the page: a response complies, or it doesn't. */
+    --ok: #15803d; --ok-bg: #dcfce7; --ko: #b91c1c; --ko-bg: #fee2e2;
+    --warn: #92400e; --warn-bg: #fef3c7;
+  }
+  body { margin: 0; font: 14px/1.5 system-ui, sans-serif; color: #18181b; background: #fafafa; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 20px; background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 3; }
   header b { font-size: 15px; }
-  .badge { padding: 2px 8px; border-radius: 10px; font-size: 12px; background: #dcfce7; color: #166534; }
-  .badge.bad { background: #fee2e2; color: #991b1b; }
-  .muted { color: #71717a; }
+  nav { display: flex; gap: 2px; margin-left: 16px; }
+  nav button { border-color: transparent; background: transparent; color: var(--muted); }
+  nav button.on { color: #18181b; background: var(--soft); font-weight: 600; }
+  .muted { color: var(--muted); }
+  .id { color: var(--muted); font-style: italic; font-weight: normal; }
+  .warn { color: var(--warn); background: var(--warn-bg); padding: 1px 8px; border-radius: 10px; font-size: 12px; }
   button { font: inherit; padding: 4px 12px; border: 1px solid #d4d4d8; border-radius: 6px; background: #fff; cursor: pointer; }
   button.primary { background: #18181b; color: #fff; border-color: #18181b; }
   button:disabled { opacity: .45; cursor: default; }
-  main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 20px; padding: 16px 20px; align-items: start; }
-  nav { display: flex; gap: 4px; margin-bottom: 12px; }
-  nav button { border-color: transparent; background: transparent; }
-  nav button.on { background: #fff; border-color: #d4d4d8; font-weight: 600; }
-  #problems:not(:empty) { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; white-space: pre-wrap; font: 12px/1.5 ui-monospace, monospace; }
-  .panel { background: #fff; border: 1px solid #e4e4e7; border-radius: 8px; padding: 16px; }
-  .tier { margin-bottom: 24px; }
-  .tier h2 { font-size: 16px; margin: 0 0 2px; }
-  .tier p { margin: 0 0 8px; }
+  code { font: 12px ui-monospace, monospace; background: var(--soft); padding: 1px 4px; border-radius: 4px; }
+
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; min-height: calc(100vh - 53px); }
+  body.no-try main { grid-template-columns: minmax(0, 1fr); }
+  body.no-try aside { display: none; }
+  section { padding: 20px 28px 60px; min-width: 0; }
+  /* Text keeps a readable measure, centered; tables take the full width. */
+  .page > :not(table, .table) { max-width: 760px; margin-left: auto; margin-right: auto; }
+  .page table { margin: 8px auto 20px; }
+  .table { overflow-x: auto; }
+  #problems:not(:empty) { max-width: 760px; margin: 0 auto 16px; background: var(--warn-bg); color: var(--warn); border-radius: 6px; padding: 8px 12px; white-space: pre-wrap; font: 12px/1.5 ui-monospace, monospace; }
+
   table { border-collapse: collapse; }
-  th, td { border: 1px solid #e4e4e7; padding: 4px 8px; text-align: left; vertical-align: top; }
-  th { background: #f4f4f5; font-weight: 600; font-size: 12px; }
-  .grid td.cell { cursor: pointer; font-size: 12px; min-width: 90px; }
-  .grid td.cell:hover { background: #f4f4f5; }
-  .grid td.cell.selected { outline: 2px solid #2563eb; outline-offset: -2px; }
-  .grid td.cell.landed { background: #dbeafe; }
-  .grid .axis { color: #71717a; }
-  .editor { margin-top: 8px; padding: 10px 12px; border: 1px solid #bfdbfe; background: #eff6ff; border-radius: 6px; }
+  th, td { border: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; }
+  th { background: var(--soft); font-weight: 600; font-size: 12px; }
+  .page h1 { font-size: 22px; } .page h2 { font-size: 17px; margin-top: 32px; } .page h3 { font-size: 15px; }
+  .flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { from { background: #fef9c3; } to { background: transparent; } }
+
+  .grid { background: #fff; }
+  .grid.wide { width: 100%; }
+  .grid td.cell { cursor: pointer; font-size: 12px; }
+  .grid td.cell:hover { background: #fafafa; }
+  .grid td.cell.selected { outline: 2px solid #18181b; outline-offset: -2px; }
+  .grid td.cell.landed { box-shadow: inset 0 0 0 2px #a1a1aa; }
+  .grid td.cell.landed.ok { background: var(--ok-bg); box-shadow: none; }
+  .grid td.cell.landed.ko { background: var(--ko-bg); box-shadow: none; }
+  .grid .axis { color: var(--muted); }
+  .editor { margin: 8px auto 0; padding: 10px 12px; border: 1px solid var(--line); background: #fff; border-radius: 6px; }
   .editor .row { margin-bottom: 6px; }
   .editor label { margin-right: 10px; white-space: nowrap; }
-  #files-bar { display: flex; gap: 8px; margin-bottom: 8px; }
-  #text { width: 100%; height: calc(100vh - 190px); font: 12px/1.5 ui-monospace, monospace; padding: 10px; border: 1px solid #d4d4d8; border-radius: 6px; resize: vertical; tab-size: 2; }
-  #changes { margin: 0; white-space: pre-wrap; font: 12px/1.5 ui-monospace, monospace; }
-  .md table { margin: 8px 0 16px; font-size: 13px; }
-  .md h1 { font-size: 20px; } .md h2 { font-size: 17px; margin-top: 28px; } .md h3 { font-size: 15px; }
-  aside { position: sticky; top: 64px; max-height: calc(100vh - 80px); overflow: auto; }
-  aside h2 { font-size: 16px; margin: 0 0 8px; }
-  aside h3 { font-size: 13px; margin: 14px 0 4px; text-transform: uppercase; letter-spacing: .03em; color: #52525b; }
+
+  #files-bar { margin-bottom: 8px; }
+  #text { width: 100%; height: calc(100vh - 170px); font: 12px/1.5 ui-monospace, monospace; padding: 10px; border: 1px solid #d4d4d8; border-radius: 6px; resize: vertical; tab-size: 2; }
+  #changes { white-space: pre-wrap; font: 12px/1.5 ui-monospace, monospace; }
+
+  /* An id that opens its definition: quiet until hovered. */
+  .ref { color: inherit; text-decoration: underline dotted #d4d4d8; text-underline-offset: 3px; cursor: pointer; }
+  .ref:hover { color: #1d4ed8; text-decoration-color: currentColor; }
+  td.cell .ref { cursor: inherit; }
+  #peek { position: fixed; z-index: 5; max-width: 360px; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px rgb(0 0 0 / .12); padding: 8px 10px; font-size: 12px; pointer-events: none; }
+  #peek b { font-size: 13px; }
+
+  aside { background: #fff; border-left: 1px solid var(--line); padding: 16px 18px 40px; position: sticky; top: 53px; height: calc(100vh - 53px); overflow: auto; }
   aside textarea { width: 100%; font: inherit; padding: 6px 8px; border: 1px solid #d4d4d8; border-radius: 6px; margin-bottom: 6px; resize: vertical; }
+  aside h3 { font-size: 12px; margin: 16px 0 4px; text-transform: uppercase; letter-spacing: .04em; color: #52525b; }
   aside table { width: 100%; font-size: 13px; }
+  aside th { width: 80px; }
   aside select { font: inherit; width: 100%; }
-  aside th { width: 70px; }
-  .scores { font-size: 11px; color: #71717a; }
-  .nudge { white-space: pre-wrap; font: inherit; font-size: 12px; background: #f4f4f5; border-radius: 6px; padding: 8px; margin: 0; }
-  .ok { color: #166534; font-weight: 600; } .ko { color: #991b1b; font-weight: 600; }
-  .error { color: #991b1b; white-space: pre-wrap; }
-  a.cell-link { color: #2563eb; cursor: pointer; text-decoration: underline; }
+  .verdict { margin-top: 14px; font-size: 13px; }
+  .verdict ul { margin: 4px 0 0; padding-left: 18px; color: #52525b; }
+  .pill { display: inline-block; padding: 0 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+  .pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.ko { color: var(--ko); background: var(--ko-bg); }
+  th.ko { color: var(--ko); }
+  .scores { font-size: 11px; color: var(--muted); }
+  .nudge { white-space: pre-wrap; font: inherit; font-size: 12px; background: var(--soft); border-radius: 6px; padding: 8px; margin: 0; }
+  .note { font-size: 12px; background: var(--soft); border-radius: 6px; padding: 8px 10px; }
+  .note pre { white-space: pre-wrap; margin: 6px 0 0; font: 11px/1.5 ui-monospace, monospace; }
+  .error { color: var(--warn); white-space: pre-wrap; }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <header>
   <b id="name">ruleswitch</b>
-  <span id="status" class="badge"></span>
-  <span id="dirty" class="muted"></span>
+  <span id="status" class="muted"></span>
+  <nav>
+    <button data-tab="document" class="on">Document</button>
+    <button data-tab="grids">Grids</button>
+    <button data-tab="files">Files</button>
+    <button data-tab="changes">Changes</button>
+  </nav>
   <span style="flex: 1"></span>
+  <span id="dirty" class="muted"></span>
   <button id="save" class="primary" disabled>Save</button>
+  <button id="toggle-try" title="Show or hide the try panel">Try</button>
 </header>
 <main>
   <section>
-    <nav>
-      <button data-tab="grids" class="on">Grids</button>
-      <button data-tab="document">Document</button>
-      <button data-tab="files">Files</button>
-      <button data-tab="changes">Changes</button>
-    </nav>
     <div id="problems"></div>
-    <div id="tab-grids" class="panel"></div>
-    <div id="tab-document" class="panel md" hidden></div>
+    <div id="tab-document" class="page"></div>
+    <div id="tab-grids" class="page" hidden></div>
     <div id="tab-files" hidden>
       <div id="files-bar"><select id="file"></select></div>
       <textarea id="text" spellcheck="false"></textarea>
     </div>
-    <div id="tab-changes" class="panel" hidden><pre id="changes"></pre></div>
+    <div id="tab-changes" class="page" hidden><pre id="changes"></pre></div>
   </section>
-  <aside class="panel">
-    <h2>Try</h2>
+  <aside>
     <textarea id="turn" rows="3" placeholder="A user's turn"></textarea>
     <textarea id="response" rows="2" placeholder="The agent's response (optional)"></textarea>
     <button id="classify" class="primary">Classify</button>
@@ -88,6 +119,7 @@
     <div id="result"></div>
   </aside>
 </main>
+<div id="peek" hidden></div>
 <script>
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -111,16 +143,18 @@ async function refresh() {
   $("dirty").textContent = dirty.length ? `unsaved: ${dirty.join(", ")}` : "";
   $("save").disabled = !dirty.length;
   $("problems").textContent = view.problems.join("\n");
-  $("status").textContent = view.problems.length ? `${view.problems.length} problem${view.problems.length > 1 ? "s" : ""}` : "no problems";
-  $("status").className = "badge" + (view.problems.length ? " bad" : "");
+  const n = view.problems.length;
+  $("status").textContent = n ? `${n} problem${n > 1 ? "s" : ""}` : "no problems";
+  $("status").className = n ? "warn" : "muted";
   renderFiles();
   if (!view.policy) return; // the files don't load: keep showing the last policy that did
   policy = view.policy;
   $("name").textContent = policy.name;
   $("tab-document").innerHTML = markdown(view.document);
+  linkIds($("tab-document"));
   $("changes").textContent = view.changes;
   renderGrids();
-  if (attempt) renderAttempt();
+  renderAttempt();
 }
 
 let timer;
@@ -130,35 +164,114 @@ const refreshSoon = () => { clearTimeout(timer); timer = setTimeout(refresh, 400
 document.querySelectorAll("nav button").forEach((b) => b.onclick = () => showTab(b.dataset.tab));
 function showTab(tab) {
   document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
-  for (const t of ["grids", "document", "files", "changes"]) $("tab-" + t).hidden = t !== tab;
+  for (const t of ["document", "grids", "files", "changes"]) $("tab-" + t).hidden = t !== tab;
+}
+$("toggle-try").onclick = () => document.body.classList.toggle("no-try");
+
+// --- ids: a quiet link that previews its definition on hover and jumps to it on click
+const ref = (kind, key, text) => `<a class="ref" data-ref="${esc(kind)}:${esc(key)}">${esc(text ?? key)}</a>`;
+const axisOf = (id) => [...policy.turn_axes, ...policy.response_axes].find((a) => a.id === id);
+const tierOf = (id) => policy.tiers.find((t) => t.id === id);
+const tierNumber = (id) => policy.tiers.findIndex((t) => t.id === id) + 1;
+const valueRef = (axis, id) => ref("value", `${axis}/${id}`, id);
+
+function preview(kind, key) {
+  if (kind === "value") {
+    const [axis, id] = key.split("/"), v = axisOf(axis)?.values.find((x) => x.id === id);
+    return v && `<b>${esc(v.label)}</b> <span class="id">${esc(axis)} ${esc(id)}</span><div>${esc(v.definition)}</div>`;
+  }
+  if (kind === "axis") { const a = axisOf(key); return a && `<b>${esc(a.id)}</b><div>${esc(a.definition)}</div>`; }
+  if (kind === "prohibition") {
+    const p = policy.prohibitions.find((x) => x.id === key);
+    return p && `<b>${esc(p.id)}</b><div>${esc(p.text)}</div>`;
+  }
+  const [tierId] = key.split("/"), t = tierOf(tierId);
+  if (!t) return null;
+  const head = `<b>Tier ${tierNumber(t.id)}: ${esc(t.label)}</b> <span class="id">${esc(kind === "cell" ? key : t.id)}</span>`;
+  return kind === "cell" ? `${head}<div>${cellSummary(t.cells[key] || {})}</div>` : `${head}<div>${esc(t.definition)} ${esc(t.instruction)}</div>`;
+}
+
+function jump(kind, key) {
+  if (kind === "cell") {
+    const [tier, ...position] = key.split("/");
+    selected = { tier, position };
+    showTab("grids");
+    renderGrids();
+    return flash(document.querySelector(`td.cell[data-tier="${CSS.escape(tier)}"][data-position="${CSS.escape(position.join("/"))}"]`));
+  }
+  showTab("document");
+  flash(document.getElementById(`def-${kind}-${key.replace("/", "-")}`));
+}
+function flash(el) {
+  if (!el) return;
+  el.scrollIntoView({ block: "center", behavior: "smooth" });
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+}
+
+let peekTimer;
+document.addEventListener("mouseover", (e) => {
+  const a = e.target.closest?.(".ref");
+  clearTimeout(peekTimer);
+  if (!a) return void ($("peek").hidden = true);
+  peekTimer = setTimeout(() => {
+    const [kind, ...rest] = a.dataset.ref.split(":"), html = preview(kind, rest.join(":"));
+    if (!html) return;
+    const peek = $("peek"), box = a.getBoundingClientRect();
+    peek.innerHTML = html;
+    peek.hidden = false;
+    peek.style.left = Math.max(8, Math.min(box.left, innerWidth - peek.offsetWidth - 8)) + "px";
+    peek.style.top = (box.bottom + 6 + peek.offsetHeight > innerHeight ? box.top - peek.offsetHeight - 6 : box.bottom + 6) + "px";
+  }, 250);
+});
+document.addEventListener("click", (e) => {
+  const a = e.target.closest(".ref");
+  if (!a || a.closest("td.cell")) return; // a click in a cell edits the cell
+  const [kind, ...rest] = a.dataset.ref.split(":");
+  $("peek").hidden = true;
+  jump(kind, rest.join(":"));
+});
+
+// Cell ids and prohibition ids are unambiguous wherever they appear; value ids are not (NONE), so they stay text.
+function linkIds(root) {
+  const ids = new Map(policy.prohibitions.map((p) => [p.id, "prohibition"]));
+  policy.tiers.forEach((t) => Object.keys(t.cells).forEach((c) => ids.set(c, "cell")));
+  const pattern = new RegExp(`(?<![\\w/])(${[...ids.keys()].sort((a, b) => b.length - a.length).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?![\\w/])`, "g");
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) if (pattern.test(walker.currentNode.data)) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const span = document.createElement("span");
+    span.innerHTML = esc(node.data).replace(pattern, (id) => ref(ids.get(id), id));
+    node.replaceWith(...span.childNodes);
+  }
 }
 
 // --- grids
 const product = (lists) => lists.reduce((acc, l) => acc.flatMap((a) => l.map((v) => [...a, v])), [[]]);
-const responseAxis = (id) => policy.response_axes.find((a) => a.id === id);
 
 function cellSummary(allowed) {
-  const axes = policy.response_axes.filter((a) => allowed[a.id]).map((a) => [a.id, allowed[a.id]]);
+  const axes = policy.response_axes.filter((a) => allowed[a.id]);
   if (!axes.length) return '<span class="muted">any</span>';
-  return axes.map(([axis, ids]) => `<span class="axis">${esc(axis)}</span> ${ids.map(esc).join(", ")}`).join("<br>");
+  return axes.map((a) => `<span class="axis">${esc(a.id)}</span> ${allowed[a.id].map((v) => valueRef(a.id, v)).join(", ")}`).join("<br>");
 }
 
 function renderGrids() {
   const landed = attempt?.prescription?.cell;
-  $("tab-grids").innerHTML = policy.tiers.map((tier) => {
+  const verdict = attempt?.compliance ? (attempt.compliance.ok ? " ok" : " ko") : "";
+  $("tab-grids").innerHTML = policy.tiers.map((tier, i) => {
     const keys = Object.keys(tier.condition);
     const columns = product(keys.slice(1).map((k) => tier.condition[k]));
-    const head = `<tr><th>${esc(keys[0])}${keys.length > 1 ? " \\ " + esc(keys.slice(1).join(" / ")) : ""}</th>` +
-      columns.map((c) => `<th>${c.length ? esc(c.join(" / ")) : "allowed"}</th>`).join("") + "</tr>";
-    const rows = tier.condition[keys[0]].map((row) => `<tr><th>${esc(row)}</th>` + columns.map((c) => {
+    const corner = ref("axis", keys[0]) + (keys.length > 1 ? " \\ " + keys.slice(1).map((k) => ref("axis", k)).join(" / ") : "");
+    const head = `<tr><th>${corner}</th>` + columns.map((c) =>
+      `<th>${c.length ? c.map((v, j) => valueRef(keys[j + 1], v)).join(" / ") : "allowed"}</th>`).join("") + "</tr>";
+    const rows = tier.condition[keys[0]].map((row) => `<tr><th>${valueRef(keys[0], row)}</th>` + columns.map((c) => {
       const position = [row, ...c], id = [tier.id, ...position].join("/");
-      const isSelected = selected && selected.tier === tier.id && selected.position.join("/") === position.join("/");
-      return `<td class="cell${isSelected ? " selected" : ""}${id === landed ? " landed" : ""}" data-tier="${esc(tier.id)}" data-position="${esc(position.join("/"))}">${cellSummary(tier.cells[id])}</td>`;
+      const isSelected = selected?.tier === tier.id && selected.position.join("/") === position.join("/");
+      return `<td class="cell${isSelected ? " selected" : ""}${id === landed ? " landed" + verdict : ""}" data-tier="${esc(tier.id)}" data-position="${esc(position.join("/"))}">${cellSummary(tier.cells[id])}</td>`;
     }).join("") + "</tr>").join("");
-    const editing = selected && selected.tier === tier.id;
-    return `<div class="tier" id="tier-${esc(tier.id)}"><h2>${esc(tier.label)} <span class="muted">${esc(tier.id)}</span></h2>
+    return `<h2 id="grid-${esc(tier.id)}">Tier ${i + 1}: ${esc(tier.label)} <span class="id">${esc(tier.id)}</span></h2>
       <p class="muted">${esc(tier.definition)} ${esc(tier.instruction)}</p>
-      <table class="grid">${head}${rows}</table>${editing ? cellEditor(tier) : ""}</div>`;
+      <div class="table"><table class="grid${columns.length > 1 ? " wide" : ""}">${head}${rows}</table></div>${selected?.tier === tier.id ? cellEditor(tier) : ""}`;
   }).join("") + '<p class="muted">A turn outside every tier gets no prescription: only the prohibitions apply.</p>';
   document.querySelectorAll("td.cell").forEach((td) => td.onclick = () => {
     selected = { tier: td.dataset.tier, position: td.dataset.position.split("/") };
@@ -174,8 +287,8 @@ function renderGrids() {
 function cellEditor(tier) {
   const id = [tier.id, ...selected.position].join("/");
   const allowed = tier.cells[id] || {};
-  const rows = policy.response_axes.map((axis) => `<div class="row"><b>${esc(axis.id)}</b>: ` + axis.values.map((v) =>
-    `<label title="${esc(v.label)}"><input type="checkbox" data-axis="${esc(axis.id)}" value="${esc(v.id)}"${(allowed[axis.id] || []).includes(v.id) ? " checked" : ""}> ${esc(v.id)}</label>`
+  const rows = policy.response_axes.map((axis) => `<div class="row"><b>${ref("axis", axis.id)}</b>: ` + axis.values.map((v) =>
+    `<label title="${esc(v.label)}: ${esc(v.definition)}"><input type="checkbox" data-axis="${esc(axis.id)}" value="${esc(v.id)}"${(allowed[axis.id] || []).includes(v.id) ? " checked" : ""}> ${esc(v.id)}</label>`
   ).join("") + "</div>").join("");
   return `<div class="editor"><div class="row"><b>${esc(id)}</b> <span class="muted">An axis with nothing checked allows any value.</span></div>
     ${rows}<button class="apply primary">Apply</button> <button class="cancel">Close</button></div>`;
@@ -238,9 +351,10 @@ $("turn").onkeydown = $("response").onkeydown = (e) => {
   if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && hasClassifier) tryIt();
 };
 
+// The values the panel shows, as the page sets them: a value left blank is not sent.
 function chosen() {
   const turn_values = {}, response_values = {};
-  document.querySelectorAll("#result select[data-side=turn]").forEach((s) => turn_values[s.dataset.axis] = s.value);
+  document.querySelectorAll("#result select[data-side=turn]").forEach((s) => { if (s.value) turn_values[s.dataset.axis] = s.value; });
   document.querySelectorAll("#result select[data-side=response]").forEach((s) => { if (s.value) response_values[s.dataset.axis] = s.value; });
   document.querySelectorAll("#result input[data-side=response]").forEach((i) => {
     response_values[i.dataset.axis] ??= [];
@@ -264,7 +378,7 @@ function questions(c) {
     .slice(0, 4).map(([k, a]) => `${esc(k)} ${(a.noul ?? 0).toFixed(2)}`).join(" · ");
 }
 
-function axisRows(side, axes, c) {
+function axisRows(side, axes, c, failed = new Set()) {
   return axes.map((axis) => {
     const value = c?.values?.[axis.id];
     let control;
@@ -272,58 +386,84 @@ function axisRows(side, axes, c) {
       const taken = Array.isArray(value) ? value : value ? [value] : [];
       control = axis.values.map((v) => `<label title="${esc(v.label)}" style="white-space:nowrap"><input type="checkbox" data-side="${side}" data-axis="${esc(axis.id)}" value="${esc(v.id)}"${taken.includes(v.id) ? " checked" : ""}> ${esc(v.id)}</label>`).join(" ");
     } else {
-      const blank = side === "response" ? '<option value="">—</option>' : "";
-      control = `<select data-side="${side}" data-axis="${esc(axis.id)}">${blank}` + axis.values.map((v) =>
+      control = `<select data-side="${side}" data-axis="${esc(axis.id)}"><option value="">—</option>` + axis.values.map((v) =>
         `<option value="${esc(v.id)}"${v.id === value ? " selected" : ""}>${esc(v.id)} · ${esc(v.label)}</option>`).join("") + "</select>";
     }
-    return `<tr><th>${esc(axis.id)}</th><td>${control}<div class="scores">${c ? scores(c, axis) : ""}</div></td></tr>`;
+    return `<tr><th${failed.has(axis.id) ? ' class="ko"' : ""}>${ref("axis", axis.id)}</th><td>${control}<div class="scores">${c ? scores(c, axis) : ""}</div></td></tr>`;
   }).join("");
 }
 
+const NO_CLASSIFIER = `<div class="note">No classifier: set the values by hand, or restart with one, such as:
+<pre>export RULESWITCH_SYSTEMONE_URL=https://openrouter.ai/api
+export RULESWITCH_SYSTEMONE_KEY=$OPENROUTER_API_KEY
+ruleswitch serve POLICY --classifier systemone:liquid/d1-ultra</pre></div>`;
+
 function renderAttempt() {
-  const a = attempt, p = a.prescription;
-  const allowed = p ? Object.entries(p.allowed).map(([axis, ids]) => `<div><b>${esc(axis)}</b>: ${ids.map((id) => esc(responseAxis(axis)?.values.find((v) => v.id === id)?.label ?? id)).join(" or ")}</div>`).join("") || '<div class="muted">any value: only the prohibitions apply</div>' : "";
-  const reminders = [...a.turn.reminders.map((r) => `<div>reminds <b>${esc(r)}</b></div>`),
-    ...a.hits.map((h) => `<div>“${esc(h.text)}” reminds <b>${esc(h.reminds)}</b> <span class="muted">${esc(h.meaning)}</span></div>`)].join("");
-  const compliance = a.compliance ? (a.compliance.ok ? '<p class="ok">Complies</p>' : '<p class="ko">Does not comply</p>' +
-    a.compliance.articles.map((x) => `<div>${esc(x.kind)} <b>${esc(x.id)}</b> ${esc(x.detail)}</div>`).join("")) : "";
-  const breaches = (a.response?.breaches || []).filter((b) => b.quote).map((b) => `<div class="scores">${esc(b.prohibition)}: “${esc(b.quote)}” ${esc(b.why)}</div>`).join("");
-  $("result").innerHTML = `
-    <h3>Turn</h3><table>${axisRows("turn", policy.turn_axes, a.turn)}</table>
-    <div class="scores">${questions(a.turn)}</div>${reminders}
-    <h3>Prescription</h3>${p ? `<div><a class="cell-link" data-cell="${esc(p.cell)}">${esc(p.cell)}</a></div>${allowed}` : '<p class="muted">No tier applies: only the prohibitions constrain the response.</p>'}
+  if (!policy) return;
+  const a = attempt, p = a?.prescription;
+  const articles = a?.compliance?.articles || [];
+  const failed = new Set(articles.filter((x) => x.kind === "cell").map((x) => x.detail.split(" ")[0]));
+  let verdict = "";
+  if (a) {
+    const where = p ? `Tier ${tierNumber(p.tier)}: ${esc(tierOf(p.tier)?.label)}, cell ${ref("cell", p.cell)}` : "No tier applies";
+    const ok = a.compliance && (a.compliance.ok ? '<span class="pill ok">Complies</span>' : '<span class="pill ko">Does not comply</span>');
+    const why = articles.map((x) => `<li>${x.kind === "cell" ? esc(x.detail) : "breaches " + ref("prohibition", x.id)}</li>`).join("");
+    verdict = `<div class="verdict">${ok ? ok + " " : ""}${where}${why ? `<ul>${why}</ul>` : ""}</div>`;
+  }
+  const allowed = p ? Object.entries(p.allowed).map(([axis, ids]) => `<div>${ref("axis", axis)}: ${ids.map((id) => valueRef(axis, id)).join(" or ")}</div>`).join("") || '<div class="muted">Any value: only the prohibitions apply.</div>' : "";
+  const reminders = a ? [...a.turn.reminders.map((r) => `<div>Reminds ${ref("prohibition", r)}</div>`),
+    ...a.hits.map((h) => `<div>“${esc(h.text)}” reminds ${ref("prohibition", h.reminds)} <span class="muted">${esc(h.meaning)}</span></div>`)].join("") : "";
+  const breaches = (a?.response?.breaches || []).filter((b) => b.quote).map((b) => `<div class="scores">${esc(b.prohibition)}: “${esc(b.quote)}” ${esc(b.why)}</div>`).join("");
+  if (hasClassifier && !a) return void ($("result").innerHTML = "");
+  $("result").innerHTML = (hasClassifier ? "" : NO_CLASSIFIER) + verdict + `
+    <h3>Turn</h3><table>${axisRows("turn", policy.turn_axes, a?.turn)}</table>
+    <div class="scores">${a ? questions(a.turn) : ""}</div>${reminders}` + (a ? `
+    <h3>Prescription</h3>${p ? allowed : '<p class="muted">Only the prohibitions constrain the response.</p>'}
     <h3>Nudge</h3>${a.nudge ? `<pre class="nudge">${esc(a.nudge)}</pre>` : '<p class="muted">None: the agent would respond right unprompted.</p>'}
-    <h3>Response</h3><table>${axisRows("response", policy.response_axes, a.response)}</table>
-    <div class="scores">${a.response ? questions(a.response) : ""}</div>
-    ${compliance}${breaches}`;
+    <h3>Response</h3><table>${axisRows("response", policy.response_axes, a.response, failed)}</table>
+    <div class="scores">${a.response ? questions(a.response) : ""}</div>${breaches}` : "");
   document.querySelectorAll("#result select, #result input").forEach((el) => el.onchange = () => tryIt(chosen()));
-  const link = document.querySelector("a.cell-link");
-  if (link) link.onclick = () => {
-    const [tier, ...position] = link.dataset.cell.split("/");
-    selected = { tier, position };
-    showTab("grids");
-    renderGrids();
-    $("tier-" + tier).scrollIntoView({ behavior: "smooth" });
-  };
 }
 
-// --- a small Markdown renderer for the `document` rendering: headings, lists, tables, emphasis, code, <br>
+// --- a small Markdown renderer for the `document` rendering: headings, lists, tables, emphasis, code, <br>.
+// It anchors each tier, axis, value and prohibition where the default template defines it, for the ids to jump to.
 function inline(s) {
   return esc(s).replace(/&lt;br&gt;/g, "<br>").replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\*([^*]+)\*/g, "<i>$1</i>");
 }
 function markdown(text) {
   const out = [], lines = text.split("\n");
-  const cells = (line) => line.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map((c) => inline(c.trim().replace(/\\\|/g, "|")));
+  const cells = (line) => line.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
+  const title = (id) => id.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+  const anchored = new Set();
+  const anchor = (key) => { if (anchored.has(key)) return ""; anchored.add(key); return ` id="def-${esc(key)}"`; };
+  let side = null, axis = null;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     let m;
-    if ((m = line.match(/^(#{1,4}) (.*)/))) out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`);
-    else if (line.startsWith("|") && lines[i + 1]?.match(/^\|[-| ]+\|$/)) {
-      const rows = [`<tr>${cells(line).map((c) => `<th>${c}</th>`).join("")}</tr>`];
-      for (i += 2; i < lines.length && lines[i].startsWith("|"); i++) rows.push(`<tr>${cells(lines[i]).map((c) => `<td>${c}</td>`).join("")}</tr>`);
+    if ((m = line.match(/^(#{1,4}) (.*)/))) {
+      const level = m[1].length, text = m[2];
+      let id = "";
+      if (level === 2) {
+        side = { "The turn": "turn_axes", "The response": "response_axes", "Prohibitions": "prohibitions" }[text] ?? null;
+        const tier = policy.tiers.find((t) => t.label === text);
+        if (tier) id = anchor(`tier-${tier.id}`);
+      } else if (level === 3 && side?.endsWith("axes")) {
+        axis = policy[side].find((a) => title(a.id) === text);
+        if (axis) id = anchor(`axis-${axis.id}`);
+      }
+      out.push(`<h${level}${id}>${inline(text)}</h${level}>`);
+    } else if (line.startsWith("|") && lines[i + 1]?.match(/^\|[-| ]+\|$/)) {
+      const rows = [`<tr>${cells(line).map((c) => `<th>${inline(c)}</th>`).join("")}</tr>`];
+      for (i += 2; i < lines.length && lines[i].startsWith("|"); i++) {
+        const row = cells(lines[i]);
+        let id = "";
+        if (axis && side?.endsWith("axes") && (m = row[0].match(/\(([A-Za-z0-9_]+)\)/)) && axis.values.some((v) => v.id === m[1])) id = anchor(`value-${axis.id}-${m[1]}`);
+        if (side === "prohibitions" && (m = row[0].match(/^\*\*([A-Za-z0-9_]+)\*\*:/))) id = anchor(`prohibition-${m[1]}`);
+        rows.push(`<tr${id}>${row.map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`);
+      }
       i--;
-      out.push(`<table>${rows.join("")}</table>`);
+      out.push(`<div class="table"><table>${rows.join("")}</table></div>`);
     } else if ((m = line.match(/^(\d+\.|-) (.*)/))) {
       const tag = m[1] === "-" ? "ul" : "ol", items = [];
       for (; i < lines.length && (m = lines[i].match(/^(\d+\.|-) (.*)/)); i++) items.push(`<li>${inline(m[2])}</li>`);
@@ -340,13 +480,9 @@ function markdown(text) {
   texts = { ...saved };
   hasClassifier = start.classifier;
   $("classify").hidden = !hasClassifier;
+  if (!hasClassifier) $("turn").oninput = () => { clearTimeout(timer); timer = setTimeout(() => tryIt(chosen()), 400); };
   await refresh();
   $("text").value = texts[$("file").value];
-  if (!hasClassifier) {
-    $("turn").oninput = () => { clearTimeout(timer); timer = setTimeout(() => tryIt(chosen()), 400); };
-    // No classifier: the try panel starts from each turn axis's first value, set by hand.
-    tryIt({ turn_values: Object.fromEntries(policy.turn_axes.map((a) => [a.id, a.values[0].id])), response_values: null });
-  }
 })();
 </script>
 </body>

@@ -117,6 +117,15 @@ ruleswitch serve POLICY [--classifier ...]       # the editor, on localhost
 POLICY is a profile directory. The built-in classifiers read their endpoint and key from `RULESWITCH_SYSTEMONE_URL` and
 `RULESWITCH_SYSTEMONE_KEY`, or `RULESWITCH_LLM_URL` and `RULESWITCH_LLM_KEY`.
 
+OpenRouter serves both, with one key:
+
+```bash
+export RULESWITCH_SYSTEMONE_URL=https://openrouter.ai/api RULESWITCH_SYSTEMONE_KEY=$OPENROUTER_API_KEY
+export RULESWITCH_LLM_URL=https://openrouter.ai/api/v1 RULESWITCH_LLM_KEY=$OPENROUTER_API_KEY
+ruleswitch serve examples/mallow/profiles/fr --classifier systemone:liquid/d1-ultra --threshold alert=0.2 --threshold exit=0.5
+ruleswitch serve examples/three_laws/profiles/default --classifier judge:openai/gpt-5-mini
+```
+
 `eval` without `--data` runs the classifier on the policy's own examples, each labelled by where it sits: it checks
 that the policy's texts draw the lines its examples draw.
 

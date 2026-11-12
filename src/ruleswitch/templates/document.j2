@@ -1,8 +1,10 @@
 {% macro exchange(e) %}{% for m in e.context %}**{{ "User" if m.role == "user" else "Agent" }}:** *{{ m.content | cell }}*<br>{% endfor %}**User:** *{{ e.turn | cell }}*{% if e.response is not none %}<br>**Agent:** *{{ e.response | cell }}*{% endif %}{% endmacro %}
 {% macro allowed(cell) %}{% for axis, values in cell.allowed.items() %}{% for v in values %}{{ policy.response_axes[axis].value(v).label }}{{ " or " if not loop.last }}{% endfor %}{{ " · " if not loop.last }}{% else %}any{% endfor %}{% endmacro %}
 # {{ policy.root.name }} · {{ policy.name }}
+{% if note | default(true) %}
 
 *Generated from `profiles/{{ policy.name }}/profile.yaml` by `ruleswitch render`: edit the YAML, not this page.*
+{% endif %}
 {% if policy.principles %}
 
 ## Principles
