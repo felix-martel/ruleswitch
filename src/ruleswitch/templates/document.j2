@@ -5,6 +5,10 @@
 
 *Generated from `profiles/{{ policy.name }}/profile.yaml` by `ruleswitch render`: edit the YAML, not this page.*
 {% endif %}
+{% if policy.context %}
+
+{{ policy.context }}
+{% endif %}
 {% if policy.principles %}
 
 ## Principles

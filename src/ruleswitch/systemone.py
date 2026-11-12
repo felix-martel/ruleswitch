@@ -149,20 +149,21 @@ class SystemOne:
         asked: dict[str, Question] = {}
         last = "user" if of == "turn" else "assistant"
         context = f"the last `{last}` message, read in the context of the messages before it"
+        about = f"{p.context}\n\n" if p.context else ""
         if of == "turn":
             for tier_id in self.thresholds:
                 if self._asked(tier_id):
                     tier = p.tiers[tier_id]
                     asked[f"tier:{tier_id}"] = {
                         "type": "noul",
-                        "instructions": f"Is {context} in this case? {tier.label}: {tier.definition}",
+                        "instructions": f"{about}Is {context} in this case? {tier.label}: {tier.definition}",
                     }
         axes = p.turn_axes if of == "turn" else p.response_axes
         settled = self._settled() if of == "turn" else set()
         for axis in axes.values():
             if axis.id in settled:
                 continue
-            instructions = f"Which value best describes {context}? {axis.definition}"
+            instructions = f"{about}Which value best describes {context}? {axis.definition}"
             if of == "turn" and p.lexicons:
                 instructions += " `hits` lists the words of that message found in a word list, with their meaning."
             if axis.ordered and len(axis.values) <= SCORE_LEVELS:
@@ -181,16 +182,16 @@ class SystemOne:
             for prohibition_id in self.remind:
                 asked[f"remind:{prohibition_id}"] = {
                     "type": "noul",
-                    "instructions": f"Does {context} ask for, invite or tempt a response that breaks the rule below? "
-                    f"A conversation that a normal response handles without coming near the rule is no. "
-                    f"Rule: {p.prohibitions[prohibition_id].text}",
+                    "instructions": f"{about}Does {context} ask for, invite or tempt a response that breaks "
+                    f"the rule below? A conversation that a normal response handles without coming near the rule is "
+                    f"no. Rule: {p.prohibitions[prohibition_id].text}",
                 }
         elif self.breach is not None:
             for prohibition in p.prohibitions.values():
                 asked[f"breach:{prohibition.id}"] = {
                     "type": "noul",
-                    "instructions": f"Does {context} break the rule below? Only words that do what the rule says "
-                    f"break it. Rule: {prohibition.text}",
+                    "instructions": f"{about}Does {context} break the rule below? Only words that do what "
+                    f"the rule says break it. Rule: {prohibition.text}",
                 }
         return asked
 

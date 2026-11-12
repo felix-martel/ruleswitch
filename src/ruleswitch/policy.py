@@ -103,6 +103,7 @@ class PrincipleFile(_File):
 
 class ProfileFile(_File):
     structure: str = f"../../{STRUCTURE}"
+    context: str | None = None
     principles: dict[str, PrincipleFile] = {}
     turn_axes: dict[str, AxisFile]
     response_axes: dict[str, AxisFile]
@@ -220,6 +221,8 @@ class Policy(Generic[T, R]):
     """A structure and one of its profiles, loaded and validated.
 
     `T` and `R` are the turn and response values mappings, which a structure's generated `structure_types.py` binds.
+    `context` says who the agent is and who it talks to, for the readers of a conversation that don't know it: a
+    classifier, a judge, people reading the document. It is not in the agent's prompt, which already says so.
     """
 
     name: str
@@ -231,6 +234,7 @@ class Policy(Generic[T, R]):
     prohibitions: Mapping[str, Prohibition]
     principles: Mapping[str, Principle]
     lexicons: tuple[Lexicon, ...]
+    context: str | None
     digest: str
     structure_digest: str
 
@@ -410,6 +414,7 @@ def load(path: str | Path, digest: str | None = None, *, revision: str | None = 
         prohibitions=prohibitions,
         principles={p: Principle(p, t.label, t.text) for p, t in profile.principles.items()},
         lexicons=tuple(lexicons),
+        context=profile.context.strip() if profile.context else None,
         digest=_sha(structure_path.read_bytes(), (profile_dir / PROFILE).read_bytes(), *lexicon_bytes),
         structure_digest=found_digest,
     )

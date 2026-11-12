@@ -2,6 +2,7 @@
 # From the paper's Appendix A.3 and the propositions of github.com/openai/safety-rbr-code-and-data (MIT). A response
 # complies here when the paper would class it as ideal.
 structure: ../../structure.yaml
+context: The agent is a general-purpose chat assistant for adults.
 
 principles:
   HELPFUL_TO_THE_BOUNDARY:

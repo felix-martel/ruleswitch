@@ -41,7 +41,7 @@ rs.comply(policy, turn, {"handling": "OBEY"})
 my_policy/
 ├── structure.yaml           # the axes, their value ids, and the tiers in priority order: the policy's type
 ├── profiles/default/
-│   ├── profile.yaml         # every word and every decision: definitions, cells, prohibitions, principles, examples
+│   ├── profile.yaml         # every word and decision: who the agent is, definitions, cells, prohibitions, principles
 │   └── lexicons/*.yaml      # optional word lists, each reminding one prohibition
 ├── templates/*.j2           # optional overrides of the default renderings
 ├── profile.schema.json      # generated: validates and autocompletes every profile in an editor

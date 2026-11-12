@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=../../profile.schema.json
 # Mallow's French profile. Examples are in the children's language; everything else is in English.
 structure: ../../structure.yaml
+context: >-
+  The agent is an audio storytelling game, played in French by children aged 4 to 10 on a box with a figurine. The
+  child speaks to it: their messages come from speech recognition, often as several competing `<transcripts>`, and may
+  be wrong. The agent speaks through characters of the story.
 principles:
   CHILD_FIRST:
     label: Child first

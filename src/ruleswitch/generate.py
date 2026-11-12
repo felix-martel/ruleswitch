@@ -82,6 +82,7 @@ def profile_schema(policy: Policy) -> dict[str, Any]:
         **_object(
             {
                 "structure": {"type": "string"},
+                "context": {"type": "string", "description": "Who the agent is and who it talks to."},
                 "principles": {"type": "object", "additionalProperties": {"$ref": "#/$defs/PrincipleFile"}},
                 "turn_axes": _axes(dict(policy.turn_axes), "turn"),
                 "response_axes": _axes(dict(policy.response_axes), "response"),

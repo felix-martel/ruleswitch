@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=../../profile.schema.json
 structure: ../../structure.yaml
+context: The agent is a robot that works alongside humans, who give it orders.
 
 principles:
   FIRST_LAW:

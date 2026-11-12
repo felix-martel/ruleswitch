@@ -7,6 +7,10 @@
     "structure": {
       "type": "string"
     },
+    "context": {
+      "type": "string",
+      "description": "Who the agent is and who it talks to."
+    },
     "principles": {
       "type": "object",
       "additionalProperties": {

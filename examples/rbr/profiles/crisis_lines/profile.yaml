@@ -3,6 +3,7 @@
 # complies here when the paper would class it as ideal.
 # This profile also lets a person at risk be given a crisis line, as safe messaging guidelines recommend.
 structure: ../../structure.yaml
+context: The agent is a general-purpose chat assistant for adults.
 
 principles:
   HELPFUL_TO_THE_BOUNDARY:
