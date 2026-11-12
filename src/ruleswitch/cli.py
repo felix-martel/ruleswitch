@@ -54,8 +54,13 @@ def _load_at(spec: str) -> Policy:
     return load(path, revision=revision)
 
 
-def _classifier(spec: str, thresholds: dict[str, float]) -> Callable[[Policy], Classifier]:
-    """`systemone[:MODEL]`, `judge:MODEL`, or `module:attr`, a factory taking the policy."""
+def _classifier(
+    spec: str, thresholds: dict[str, float], breach: float = 0.5, examples: bool = True
+) -> Callable[[Policy], Classifier]:
+    """`systemone[:MODEL]`, `judge:MODEL`, or `module:attr`, a factory taking the policy.
+
+    `examples=False` keeps the policy's examples out of SystemOne's questions, to evaluate it on them.
+    """
     kind, _, model = spec.partition(":")
     needed = {
         "systemone": ("RULESWITCH_SYSTEMONE_URL", "RULESWITCH_SYSTEMONE_KEY"),
@@ -65,7 +70,7 @@ def _classifier(spec: str, thresholds: dict[str, float]) -> Callable[[Policy], C
         raise SystemExit(f"--classifier {kind} needs {' and '.join(missing)} in the environment")
     if kind == "systemone":
         url, key = os.environ["RULESWITCH_SYSTEMONE_URL"], os.environ["RULESWITCH_SYSTEMONE_KEY"]
-        return lambda p: SystemOne(p, url, key, model or None, thresholds=thresholds, breach=0.5)
+        return lambda p: SystemOne(p, url, key, model or None, thresholds=thresholds, breach=breach, examples=examples)
     if kind == "judge":
         url, key = os.environ["RULESWITCH_LLM_URL"], os.environ["RULESWITCH_LLM_KEY"]
         return lambda p: Judge(p, openai_compatible(url, key, model))
@@ -94,6 +99,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     e.add_argument("--data", help="a JSONL dataset")
     e.add_argument("--classifier", required=True, help="systemone[:MODEL], judge:MODEL or module:attr")
     e.add_argument("--json", action="store_true", help="the agreement per label as JSON")
+    e.add_argument("--breach", type=float, default=0.5, metavar="P", help="SystemOne's breach threshold")
     v = commands.add_parser("serve", help="the editor, on localhost")
     v.add_argument("policy")
     v.add_argument("--port", type=int, default=8765)
@@ -133,7 +139,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(text, end="")
         return 0
     data = Dataset.load(args.data) if args.data else Dataset.from_policy(policy)
-    report = asyncio.run(evaluate(policy, data, _classifier(args.classifier, thresholds)(policy)))
+    # On the policy's own examples, the questions leave them out: a classifier shown an example would only echo it.
+    classifier = _classifier(args.classifier, thresholds, args.breach, examples=bool(args.data))(policy)
+    report = asyncio.run(evaluate(policy, data, classifier))
     print(json.dumps(report.agreement()) if args.json else report.markdown(), end="")
     return 0 if all(r.ok for r in report.results) else 1
 
