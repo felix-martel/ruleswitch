@@ -219,7 +219,7 @@ R = TypeVar("R", bound=Mapping[str, object], default=Values)
 class Policy(Generic[T, R]):
     """A structure and one of its profiles, loaded and validated.
 
-    `T` and `R` are the turn and response values mappings, which a structure's generated `types.py` binds.
+    `T` and `R` are the turn and response values mappings, which a structure's generated `structure_types.py` binds.
     """
 
     name: str

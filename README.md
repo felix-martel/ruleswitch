@@ -45,7 +45,7 @@ my_policy/
 │   └── lexicons/*.yaml      # optional word lists, each reminding one prohibition
 ├── templates/*.j2           # optional overrides of the default renderings
 ├── profile.schema.json      # generated: validates and autocompletes every profile in an editor
-└── types.py                 # generated: value ids as Literal types, and a typed load()
+└── structure_types.py       # generated: value ids as Literal types, and a typed load()
 ```
 
 `structure.yaml` for Asimov's laws, in full. Each law's "unless" is the tiers' order:
@@ -107,7 +107,7 @@ belong to the model's calibration. Pass `decide=` instead of an endpoint to brin
 ```text
 ruleswitch init NAME [--from three_laws|rbr]     # a new policy, copied from a toy one
 ruleswitch check POLICY                          # static checks; exit 1 on any problem
-ruleswitch generate POLICY                       # profile.schema.json and types.py, from structure.yaml
+ruleswitch generate POLICY                       # profile.schema.json and structure_types.py, from structure.yaml
 ruleswitch render POLICY [--rendering document|prompt|judge] [-o FILE]
 ruleswitch diff OLD NEW                          # profile directories, or DIR@REV for a git revision
 ruleswitch eval POLICY [--data FILE] --classifier systemone[:MODEL]|judge:MODEL|module:attr

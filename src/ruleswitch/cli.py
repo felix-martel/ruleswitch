@@ -79,7 +79,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     i.add_argument("name", help="the directory to create")
     i.add_argument("--from", dest="toy", choices=TOYS, default=TOYS[0])
     commands.add_parser("check", help="static checks; exit 1 on any problem").add_argument("policy")
-    commands.add_parser("generate", help="profile.schema.json and types.py, from structure.yaml").add_argument("policy")
+    commands.add_parser(
+        "generate", help="profile.schema.json and structure_types.py, from structure.yaml"
+    ).add_argument("policy")
     r = commands.add_parser("render", help="the policy as text")
     r.add_argument("policy")
     r.add_argument("--rendering", choices=["document", "prompt", "judge"], default="document")
