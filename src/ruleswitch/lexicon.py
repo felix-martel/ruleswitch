@@ -9,7 +9,7 @@ from __future__ import annotations
 import functools
 import re
 import unicodedata
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 
 from pydantic import BaseModel, ConfigDict
 
@@ -62,7 +62,6 @@ def match(
     lexicons: Sequence[Lexicon],
     text: str,
     language: str | None = None,
-    strip: Callable[[str], str] | None = None,
 ) -> list[Hit]:
     """The lexicon entries found in `text`, in order of first appearance, each entry once.
 
@@ -72,10 +71,7 @@ def match(
         lexicons: the word lists, such as `policy.lexicons`.
         text: what to search, such as the turn's last message.
         language: the conversation's language, which leaves out entries restricted to others; every entry if None.
-        strip: blanks out what to ignore, such as markup, keeping every other character in place.
     """
-    if strip is not None:
-        text = strip(text)
     folded = _fold(text)
     found: list[tuple[int, int, Hit]] = []
     for lexicon in lexicons:
