@@ -44,7 +44,7 @@ line-length = 120
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pyright]
-include = ["src", "tests", "examples", "benchmarks"]
+include = ["src", "tests", "examples"]
 pythonVersion = "3.13"
 
 # The toy policies `ruleswitch init` starts from.

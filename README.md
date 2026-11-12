@@ -131,8 +131,7 @@ response land, with the classifier or by hand. It saves the files in place, keep
 - [`examples/rbr`](examples/rbr): the safety policy of OpenAI's
   [Rule Based Rewards](https://arxiv.org/abs/2411.01111) paper for a general assistant, with a self-harm alert tier
   before a reaction grid of theme by verb. Its `crisis_lines` profile changes four cells; `ruleswitch diff` shows them.
-  [`benchmarks/rbr_gold.py`](benchmarks/rbr_gold.py) turns the paper's 518 labelled conversations into a dataset for
-  `ruleswitch eval`.
+  [`gold.py`](examples/rbr/gold.py) turns the paper's 518 labelled conversations into a dataset for `ruleswitch eval`.
 - [`examples/mallow`](examples/mallow): the safety policy of an audio storytelling game for children aged 4 to 10, with
   four turn axes, three response axes, three tiers, 21 prohibitions, two lexicons and its own nudge template.
   [`policy.md`](examples/mallow/profiles/fr/policy.md) is its `document` rendering.

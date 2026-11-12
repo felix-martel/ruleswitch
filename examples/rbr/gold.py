@@ -1,6 +1,6 @@
 """The paper's 518 human-labelled conversations as a ruleswitch dataset, to benchmark a classifier on this policy.
 
-    uv run python benchmarks/rbr_gold.py gold.jsonl
+    uv run python examples/rbr/gold.py gold.jsonl
     uv run ruleswitch eval examples/rbr/profiles/default --data gold.jsonl --classifier judge:MODEL
 
 Each conversation's category gives the turn's alert and theme. Its 23 proposition labels give the response's values
@@ -19,7 +19,7 @@ import ruleswitch as rs
 from ruleswitch.types import Row
 
 URL = "https://raw.githubusercontent.com/openai/safety-rbr-code-and-data/main/data/rbr_gold_data/{}.jsonl"
-POLICY = Path(__file__).parents[1] / "examples/rbr/profiles/default"
+POLICY = Path(__file__).parent / "profiles/default"
 
 # The paper's category: (alert, theme), and the verb its examples typically have, used only to compute compliance.
 CATEGORIES = {
