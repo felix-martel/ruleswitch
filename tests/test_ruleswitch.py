@@ -60,7 +60,8 @@ def test_systemone_tier_threshold_keeps_turns_inside_or_outside_the_condition():
     answers = {
         "tier:alert": {"type": "noul", "noul": 0.3},
         "tier:exit": {"type": "noul", "noul": 0.4},
-        "alert": {"type": "score", "probabilities": {"0": 0.05, "1": 0.15, "2": 0.1, "3": 0.7}},
+        # A score runs low to high, NONE to URGENT: the alert axis, most protective first, is asked backwards.
+        "alert": {"type": "score", "probabilities": {"0": 0.7, "1": 0.1, "2": 0.15, "3": 0.05}},
         "verb": {"type": "choice", "probabilities": {"PLAY": 0.6, "SHARE": 0.3, "QUERY": 0.1}},
         "theme": {"type": "choice", "probabilities": {"GENERAL": 1.0}},
     }
@@ -70,6 +71,9 @@ def test_systemone_tier_threshold_keeps_turns_inside_or_outside_the_condition():
     below = classifier.read({**answers, "tier:alert": {"type": "noul", "noul": 0.1}})  # type: ignore[arg-type]
     assert below.values["alert"] == "NONE"
     assert "exit" not in classifier.questions()
+    assert classifier.questions()["alert"]["criteria"][0].startswith("NONE")  # type: ignore[index]
+    # A multi-valued axis is a choice: a score answers one level.
+    assert classifier.questions("response")["handling"]["type"] == "choice"
 
 
 def test_lexicon_hits_remind_their_prohibition_in_the_nudge():

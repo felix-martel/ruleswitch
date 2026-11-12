@@ -26,7 +26,11 @@ from ruleswitch.types import (
 )
 
 SCORE_LEVELS = 10
-"""System One accepts at most this many levels in a score question; a longer ordered axis is asked as a choice."""
+"""System One accepts at most this many levels in a score question; a longer ordered axis is asked as a choice.
+
+A score lists its levels from the low end of the scale to the high end, and an ordered axis from its first value, the
+one a doubt settles on, to its last: an ordered axis is asked from its last value up to its first.
+"""
 
 type Of = Literal["turn", "response"]
 
@@ -61,14 +65,14 @@ def client(base_url: str, api_key: str, model: str | None = None, timeout: float
     return decide
 
 
-def _criterion(value: Value, of: Of) -> dict[str, Any]:
+def _criterion(value: Value, of: Of, examples: bool) -> dict[str, Any]:
     criterion: dict[str, Any] = {"what": value.definition}
     if value.indicators:
         criterion["indicators"] = ", ".join(value.indicators)
     for name in ("excludes", "includes", "avoids"):
         if text := getattr(value, name):
             criterion[name] = text
-    if value.examples:
+    if examples and value.examples:
         criterion["examples"] = [e.turn if of == "turn" else e.response for e in value.examples]
     return criterion
 
@@ -89,6 +93,8 @@ class SystemOne:
         remind: per prohibition id, the probability from which a turn reminds it.
         breach: the probability from which a response breaches a prohibition; None asks no breach question.
         state: builds the model's state from the conversation and the hits, `default_state` by default.
+        examples: whether a value's criteria carry its examples. Turn it off to evaluate the classifier on the
+            policy's own examples, which it would otherwise be shown.
     """
 
     def __init__(
@@ -103,12 +109,14 @@ class SystemOne:
         remind: Mapping[str, float] | None = None,
         breach: float | None = None,
         state: Callable[[Sequence[Message], Sequence[Hit]], State] = default_state,
+        examples: bool = True,
     ):
         self.policy = policy
         self.thresholds = dict(thresholds)
         self.remind = dict(remind or {})
         self.breach = breach
         self.state = state
+        self.examples = examples
         if decide is None and base_url is not None:
             if api_key is None:
                 raise ValueError("pass `api_key` with `base_url`")
@@ -148,7 +156,7 @@ class SystemOne:
         p = self.policy
         asked: dict[str, Question] = {}
         last = "user" if of == "turn" else "assistant"
-        context = f"the last `{last}` message, read in the context of the messages before it"
+        subject = f"the last `{last}` message, read in the context of the messages before it"
         about = f"{p.context}\n\n" if p.context else ""
         if of == "turn":
             for tier_id in self.thresholds:
@@ -156,33 +164,34 @@ class SystemOne:
                     tier = p.tiers[tier_id]
                     asked[f"tier:{tier_id}"] = {
                         "type": "noul",
-                        "instructions": f"{about}Is {context} in this case? {tier.label}: {tier.definition}",
+                        "instructions": f"{about}Does {subject}, fall under the case below? "
+                        f"{tier.label}: {tier.definition}",
                     }
         axes = p.turn_axes if of == "turn" else p.response_axes
         settled = self._settled() if of == "turn" else set()
         for axis in axes.values():
             if axis.id in settled:
                 continue
-            instructions = f"{about}Which value best describes {context}? {axis.definition}"
+            instructions = f"{about}Which value best describes {subject}? {axis.definition}"
             if of == "turn" and p.lexicons:
                 instructions += " `hits` lists the words of that message found in a word list, with their meaning."
-            if axis.ordered and len(axis.values) <= SCORE_LEVELS:
+            if axis.ordered and not axis.multi and len(axis.values) <= SCORE_LEVELS:
                 asked[axis.id] = {
                     "type": "score",
                     "instructions": instructions,
-                    "criteria": [f"{v.id}: {v.definition}" for v in axis.values],
+                    "criteria": [f"{v.id}: {v.definition}" for v in reversed(axis.values)],
                 }
             else:
                 asked[axis.id] = {
                     "type": "choice",
                     "instructions": instructions,
-                    "criteria": {v.id: _criterion(v, of) for v in axis.values},
+                    "criteria": {v.id: _criterion(v, of, self.examples) for v in axis.values},
                 }
         if of == "turn":
             for prohibition_id in self.remind:
                 asked[f"remind:{prohibition_id}"] = {
                     "type": "noul",
-                    "instructions": f"{about}Does {context} ask for, invite or tempt a response that breaks "
+                    "instructions": f"{about}Does {subject}, ask for, invite or tempt a response that breaks "
                     f"the rule below? A conversation that a normal response handles without coming near the rule is "
                     f"no. Rule: {p.prohibitions[prohibition_id].text}",
                 }
@@ -190,7 +199,7 @@ class SystemOne:
             for prohibition in p.prohibitions.values():
                 asked[f"breach:{prohibition.id}"] = {
                     "type": "noul",
-                    "instructions": f"{about}Does {context} break the rule below? Only words that do what "
+                    "instructions": f"{about}Does {subject}, break the rule below? Only words that do what "
                     f"the rule says break it. Rule: {prohibition.text}",
                 }
         return asked
@@ -204,7 +213,9 @@ class SystemOne:
             if answer is None:
                 probabilities[axis.id] = {v: 0.0 for v in axis.ids}
             elif answer["type"] == "score":
-                probabilities[axis.id] = {axis.ids[int(k)]: p for k, p in answer.get("probabilities", {}).items()}
+                last = len(axis.ids) - 1
+                scored = answer.get("probabilities", {}).items()
+                probabilities[axis.id] = {axis.ids[last - int(k)]: p for k, p in scored}
             else:
                 probabilities[axis.id] = dict(answer.get("probabilities") or {answer.get("choice", axis.ids[0]): 1.0})
 
