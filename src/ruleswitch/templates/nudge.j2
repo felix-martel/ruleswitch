@@ -10,7 +10,7 @@ Note: the policy reads the user's last message as {{ tier.label | lower }} ({% f
   - {{ v.label | ucfirst }}: {{ value(v) }}
 {% endfor %}
 {% endif %}
-{% if axis.guidance and values | rejectattr("default") | list %}
+{% if axis.guidance %}
   {{ axis.guidance }}
 {% endif %}
 {% endfor %}

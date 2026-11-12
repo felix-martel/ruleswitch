@@ -75,7 +75,9 @@ def nudge(policy: Policy, turn: Classification | Values, hits: Sequence[Hit] = (
             policy.response_axes[axis]: [policy.response_axes[axis].value(v) for v in ids]
             for axis, ids in prescription.allowed.items()
         }
-    needed = any(not v.default for values_ in allowed.values() for v in values_)
+    # An axis whose allowed values are all defaults asks nothing the agent wouldn't do unprompted.
+    allowed = {axis: values_ for axis, values_ in allowed.items() if not all(v.default for v in values_)}
+    needed = bool(allowed)
     if not needed and not reminded:
         return None
     tier = policy.tiers[prescription.tier] if prescription and needed else None
