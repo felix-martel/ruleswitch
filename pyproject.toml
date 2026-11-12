@@ -31,7 +31,14 @@ dev = [
     "pyright>=1.1.400",
     "pytest>=8.3",
     "ruff>=0.11",
+    "ruleswitch-editor",
 ]
+
+[tool.uv.workspace]
+members = ["editor"]
+
+[tool.uv.sources]
+ruleswitch-editor = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
@@ -44,7 +51,7 @@ line-length = 120
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pyright]
-include = ["src", "tests", "examples"]
+include = ["src", "tests", "examples", "editor"]
 pythonVersion = "3.13"
 
 # The toy policies `ruleswitch init` starts from.

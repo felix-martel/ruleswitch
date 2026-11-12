@@ -1,4 +1,4 @@
-"""The `ruleswitch` command: create, check, generate, render, diff and evaluate policies, and serve the editor.
+"""The `ruleswitch` command: create, check, generate, render, diff and evaluate policies.
 
 POLICY is a profile directory, such as `examples/mallow/profiles/fr`. The built-in classifiers read their endpoint and
 key from the environment: `RULESWITCH_SYSTEMONE_URL` and `RULESWITCH_SYSTEMONE_KEY`, or `RULESWITCH_LLM_URL` and
@@ -19,7 +19,6 @@ from pathlib import Path
 
 from ruleswitch.check import check
 from ruleswitch.diff import diff
-from ruleswitch.editor import serve
 from ruleswitch.evaluate import Dataset, evaluate
 from ruleswitch.generate import generate
 from ruleswitch.judge import Judge, openai_compatible
@@ -54,10 +53,10 @@ def _load_at(spec: str) -> Policy:
     return load(path, revision=revision)
 
 
-def _classifier(
+def classifier(
     spec: str, thresholds: dict[str, float], breach: float = 0.5, examples: bool = True
 ) -> Callable[[Policy], Classifier]:
-    """`systemone[:MODEL]`, `judge:MODEL`, or `module:attr`, a factory taking the policy.
+    """The classifier factory named by `spec`: `systemone[:MODEL]`, `judge:MODEL`, or `module:attr`, taking the policy.
 
     `examples=False` keeps the policy's examples out of SystemOne's questions, to evaluate it on them.
     """
@@ -100,12 +99,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     e.add_argument("--classifier", required=True, help="systemone[:MODEL], judge:MODEL or module:attr")
     e.add_argument("--json", action="store_true", help="the agreement per label as JSON")
     e.add_argument("--breach", type=float, default=0.5, metavar="P", help="SystemOne's breach threshold")
-    v = commands.add_parser("serve", help="the editor, on localhost")
-    v.add_argument("policy")
-    v.add_argument("--port", type=int, default=8765)
-    v.add_argument("--classifier", help="the try panel's: systemone[:MODEL], judge:MODEL or module:attr")
-    for command in (e, v):
-        command.add_argument("--threshold", action="append", default=[], metavar="TIER=P", help="SystemOne tiers")
+    e.add_argument("--threshold", action="append", default=[], metavar="TIER=P", help="SystemOne tiers")
     args = parser.parse_args(argv)
 
     if args.command == "init":
@@ -114,9 +108,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         if args.command == "diff":
             print(diff(_load_at(args.old), _load_at(args.new)))
-            return 0
-        if args.command == "serve":
-            serve(args.policy, args.port, args.classifier and _classifier(args.classifier, thresholds))
             return 0
         policy = load(args.policy)
     except PolicyError as error:
@@ -140,8 +131,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     data = Dataset.load(args.data) if args.data else Dataset.from_policy(policy)
     # On the policy's own examples, the questions leave them out: a classifier shown an example would only echo it.
-    classifier = _classifier(args.classifier, thresholds, args.breach, examples=bool(args.data))(policy)
-    report = asyncio.run(evaluate(policy, data, classifier))
+    factory = classifier(args.classifier, thresholds, args.breach, examples=bool(args.data))
+    report = asyncio.run(evaluate(policy, data, factory(policy)))
     print(json.dumps(report.agreement()) if args.json else report.markdown(), end="")
     return 0 if all(r.ok for r in report.results) else 1
 

@@ -1,0 +1,19 @@
+[project]
+name = "ruleswitch-editor"
+version = "0.1.0"
+description = "Browse, edit and try a ruleswitch policy in the browser."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Félix Martel" }]
+requires-python = ">=3.13"
+dependencies = ["ruleswitch"]
+
+[project.scripts]
+ruleswitch-editor = "ruleswitch_editor:main"
+
+[tool.uv.sources]
+ruleswitch = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

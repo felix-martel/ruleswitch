@@ -19,7 +19,12 @@ ruleswitch needs Python 3.13 or later.
 pip install git+https://github.com/felix-martel/ruleswitch
 ruleswitch init my_policy                     # a copy of Asimov's Three Laws; --from rbr for a fuller policy
 ruleswitch check my_policy/profiles/default   # what is missing or inconsistent
-ruleswitch serve my_policy/profiles/default   # edit it in the browser, and try it on a sentence
+```
+
+To edit it in the browser and try it on a sentence, run [the editor](editor):
+
+```bash
+uvx --from "git+https://github.com/felix-martel/ruleswitch#subdirectory=editor" ruleswitch-editor my_policy/profiles/default
 ```
 
 Then use it from Python:
@@ -111,7 +116,6 @@ ruleswitch generate POLICY                       # profile.schema.json and struc
 ruleswitch render POLICY [--rendering document|prompt|judge] [-o FILE]
 ruleswitch diff OLD NEW                          # profile directories, or DIR@REV for a git revision
 ruleswitch eval POLICY [--data FILE] --classifier systemone[:MODEL]|judge:MODEL|module:attr
-ruleswitch serve POLICY [--classifier ...]       # the editor, on localhost
 ```
 
 POLICY is a profile directory. The built-in classifiers read their endpoint and key from `RULESWITCH_SYSTEMONE_URL` and
@@ -122,16 +126,12 @@ OpenRouter serves both, with one key:
 ```bash
 export RULESWITCH_SYSTEMONE_URL=https://openrouter.ai/api RULESWITCH_SYSTEMONE_KEY=$OPENROUTER_API_KEY
 export RULESWITCH_LLM_URL=https://openrouter.ai/api/v1 RULESWITCH_LLM_KEY=$OPENROUTER_API_KEY
-ruleswitch serve examples/mallow/profiles/fr --classifier systemone:liquid/d1-ultra --threshold alert=0.2 --threshold exit=0.5
-ruleswitch serve examples/three_laws/profiles/default --classifier judge:openai/gpt-5-mini
+ruleswitch eval examples/mallow/profiles/fr --classifier systemone:liquid/d1-ultra --threshold alert=0.2 --threshold exit=0.5
+ruleswitch eval examples/three_laws/profiles/default --classifier judge:openai/gpt-5-mini
 ```
 
 `eval` without `--data` runs the classifier on the policy's own examples, each labelled by where it sits: it checks
 that the policy's texts draw the lines its examples draw.
-
-`serve` shows each tier's grid, where a cell opens a form, the YAML files, the `document` rendering, the problems
-`check` finds and the changes since git `HEAD`, all live on unsaved edits. Its try panel shows where a turn and a
-response land, with the classifier or by hand. It saves the files in place, keeping their comments.
 
 ## Examples
 

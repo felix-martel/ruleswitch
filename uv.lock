@@ -2,6 +2,12 @@ version = 1
 revision = 5
 requires-python = ">=3.13"
 
+[manifest]
+members = [
+    "ruleswitch",
+    "ruleswitch-editor",
+]
+
 [[package]]
 name = "annotated-types"
 version = "0.8.0"
@@ -349,6 +355,7 @@ dev = [
     { name = "pyright" },
     { name = "pytest" },
     { name = "ruff" },
+    { name = "ruleswitch-editor" },
 ]
 
 [package.metadata]
@@ -363,7 +370,19 @@ dev = [
     { name = "pyright", specifier = ">=1.1.400" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "ruff", specifier = ">=0.11" },
+    { name = "ruleswitch-editor", editable = "editor" },
 ]
+
+[[package]]
+name = "ruleswitch-editor"
+version = "0.1.0"
+source = { editable = "editor" }
+dependencies = [
+    { name = "ruleswitch" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "ruleswitch", editable = "." }]
 
 [[package]]
 name = "typing-extensions"
