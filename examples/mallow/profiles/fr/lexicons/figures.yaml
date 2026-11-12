@@ -1,6 +1,11 @@
 # Sensitive public figures (§2.1, "Personnalité sensible"), matched like `offensive.yaml`. The list comes from Félix's
 # policy (§2.7) and is a seed, not the full list. Use the full name when the surname alone is a common word
 # ("Hollande" is also the Netherlands).
+#
+# These names are published on purpose: Mallow makes its safety decisions in the open. Listing a person here is no
+# judgment of them; it only means a children's game should not play with their name. A few entries are private
+# people, such as the child victim of the Villemin case, whose names became part of public discourse through
+# coverage of a crime.
 
 reminds: SENSITIVE_FIGURE
 

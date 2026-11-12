@@ -1,3 +1,7 @@
+# These words are published on purpose: Mallow makes its safety decisions in the open, and a filter is easier to
+# review and correct when anyone can read what it catches. Listing a word here does not endorse it; it is listed so
+# a child's game never repeats it.
+#
 # Words that flag a player input, warned about by the game engine and read by the decision model.
 #
 # The LLM does not always know these words: it takes old-fashioned insults, slang and coded slurs for invented words,
